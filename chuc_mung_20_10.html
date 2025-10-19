@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chúc Mừng 20/10</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pacifico&display=swap');
 
@@ -308,6 +309,21 @@
             cursor: grab;
             perspective: 5000px;
             filter: drop-shadow(0 0 80px rgba(255, 107, 157, 0.8));
+        }
+
+        .three-heart-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .three-heart-container canvas {
+            border-radius: 50%;
+            filter: drop-shadow(0 0 50px rgba(255, 107, 157, 0.6));
         }
 
         .heart-container:active {
@@ -825,6 +841,7 @@
     <div class="container" id="heartContainer">
         <h1 class="title">💖 Hương Lan Dễ Thương 💖</h1>
         <div class="heart-container" id="heartStarsContainer">
+            <div class="three-heart-container" id="threeHeartContainer"></div>
             <div class="heart-wrapper" id="heartWrapper"></div>
         </div>
     </div>
@@ -840,7 +857,8 @@
                     starsContainer: document.getElementById('stars'),
                     nebulaContainer: document.getElementById('nebula'),
                     heartWrapper: document.getElementById('heartWrapper'),
-                    heartStarsContainer: document.getElementById('heartStarsContainer')
+                    heartStarsContainer: document.getElementById('heartStarsContainer'),
+                    threeHeartContainer: document.getElementById('threeHeartContainer')
                 };
                 
                 this.state = {
@@ -854,7 +872,11 @@
                     isAnimationComplete: false,
                     heartStars: [],
                     cosmicParticles: [],
-                    galaxyRings: []
+                    galaxyRings: [],
+                    threeScene: null,
+                    threeRenderer: null,
+                    threeCamera: null,
+                    threeHeart: null
                 };
                 
                 this.config = {
@@ -875,6 +897,7 @@
                 this.setupEventListeners();
                 this.createStars();
                 this.createNebula();
+                this.initThreeJS();
                 this.startEnvelopeSequence();
                 this.setupPerformanceOptimization();
             }
@@ -981,6 +1004,12 @@
             updateHeartRotation() {
                 this.elements.heartWrapper.style.transform = 
                     `rotateX(${this.state.rotationX}deg) rotateY(${this.state.rotationY}deg)`;
+                
+                // Update Three.js heart rotation
+                if (this.state.threeHeart) {
+                    this.state.threeHeart.rotation.x = this.state.rotationX * Math.PI / 180;
+                    this.state.threeHeart.rotation.y = this.state.rotationY * Math.PI / 180;
+                }
             }
             
             resetHeartRotation() {
@@ -1198,6 +1227,108 @@
                 }, 800);
             }
             
+            initThreeJS() {
+                if (typeof THREE === 'undefined') {
+                    console.warn('Three.js not loaded');
+                    return;
+                }
+                
+                const container = this.elements.threeHeartContainer;
+                const width = 500;
+                const height = 500;
+                
+                // Scene
+                this.state.threeScene = new THREE.Scene();
+                
+                // Camera
+                this.state.threeCamera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+                this.state.threeCamera.position.z = 2;
+                
+                // Renderer
+                this.state.threeRenderer = new THREE.WebGLRenderer({ 
+                    antialias: true, 
+                    alpha: true,
+                    transparent: true 
+                });
+                this.state.threeRenderer.setSize(width, height);
+                this.state.threeRenderer.setClearColor(0x000000, 0);
+                container.appendChild(this.state.threeRenderer.domElement);
+                
+                // Create 3D heart with particles
+                this.createThreeJSHeart();
+                
+                // Start animation
+                this.animateThreeJS();
+            }
+            
+            createThreeJSHeart() {
+                const particles = 5000;
+                const geometry = new THREE.BufferGeometry();
+                const positions = [];
+                const colors = [];
+                const sizes = [];
+                
+                for (let i = 0; i < particles; i++) {
+                    const t = Math.random() * Math.PI * 2;
+                    const r = Math.random();
+                    
+                    // Heart equation
+                    const x = 16 * Math.pow(Math.sin(t), 3) * r;
+                    const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)) * r;
+                    const z = (Math.random() - 0.5) * 0.5;
+                    
+                    positions.push(x * 0.08, y * 0.08, z);
+                    
+                    // Color variation
+                    const colorVariation = Math.random();
+                    if (colorVariation < 0.3) {
+                        colors.push(1, 0.4, 0.7); // Pink
+                    } else if (colorVariation < 0.6) {
+                        colors.push(1, 0.08, 0.58); // Deep pink
+                    } else if (colorVariation < 0.8) {
+                        colors.push(1, 0.75, 0.8); // Light pink
+                    } else {
+                        colors.push(1, 1, 0); // Yellow
+                    }
+                    
+                    // Size variation
+                    sizes.push(Math.random() * 0.03 + 0.01);
+                }
+                
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+                geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+                
+                // Material
+                const material = new THREE.PointsMaterial({
+                    size: 0.02,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.8,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                // Create heart
+                this.state.threeHeart = new THREE.Points(geometry, material);
+                this.state.threeScene.add(this.state.threeHeart);
+            }
+            
+            animateThreeJS() {
+                if (!this.state.threeRenderer || !this.state.threeScene || !this.state.threeCamera) {
+                    return;
+                }
+                
+                requestAnimationFrame(() => this.animateThreeJS());
+                
+                if (this.state.threeHeart) {
+                    this.state.threeHeart.rotation.y += 0.005;
+                    this.state.threeHeart.rotation.x += 0.002;
+                    this.state.threeHeart.rotation.z += 0.001;
+                }
+                
+                this.state.threeRenderer.render(this.state.threeScene, this.state.threeCamera);
+            }
+            
             createOuterStars(centerX, centerY) {
                 const outerStarsContainer = document.createElement('div');
                 outerStarsContainer.className = 'outer-heart-stars';
@@ -1354,6 +1485,14 @@
                 // Disconnect observer
                 if (this.observer) {
                     this.observer.disconnect();
+                }
+                
+                // Cleanup Three.js
+                if (this.state.threeRenderer) {
+                    this.state.threeRenderer.dispose();
+                }
+                if (this.state.threeScene) {
+                    this.state.threeScene.clear();
                 }
                 
                 // Clear arrays
