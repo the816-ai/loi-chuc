@@ -1,1812 +1,981 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chúc Mừng 20/10</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pacifico&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Arial', sans-serif;
-            position: relative;
-        }
-
-        .space-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(ellipse at 20% 20%, #0a0a0a 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, #1a1a2e 0%, transparent 50%),
-                radial-gradient(ellipse at 40% 60%, #16213e 0%, transparent 50%),
-                linear-gradient(135deg, #0f0f23 0%, #000000 50%, #0a0a0a 100%);
-            opacity: 0;
-            transition: opacity 3s ease;
-            z-index: 1;
-        }
-
-        .space-background.show {
-            opacity: 1;
-        }
-
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 3s ease;
-            z-index: 2;
-        }
-
-        .stars.show {
-            opacity: 1;
-        }
-
-        .star {
-            position: absolute;
-            background: radial-gradient(circle, #ffffff 0%, #f0f0f0 30%, transparent 70%);
-            border-radius: 50%;
-            animation: twinkle linear infinite, starFloat ease-in-out infinite;
-            box-shadow: 
-                0 0 6px rgba(255, 255, 255, 0.8),
-                0 0 12px rgba(255, 255, 255, 0.4),
-                0 0 18px rgba(255, 255, 255, 0.2);
-        }
-
-        .star::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 2px;
-            height: 2px;
-            background: #ffffff;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 4px #ffffff;
-        }
-
-        .nebula {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 2s ease;
-            z-index: 3;
-        }
-
-        .nebula.show {
-            opacity: 1;
-        }
-
-        .nebula-cloud {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            animation: nebulaFloat ease-in-out infinite;
-        }
-
-        .shooting-star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
-            animation: shoot linear;
-        }
-
-        .teddy-bear {
-            position: fixed;
-            font-size: 2.5em;
-            z-index: 5;
-            animation: fall linear forwards, teddyFloat 3s ease-in-out infinite;
-            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
-            pointer-events: none;
-        }
-
-        .envelope-wrapper {
-            position: absolute;
-            z-index: 100;
-            animation: envelopeEntry 3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            transform-style: preserve-3d;
-        }
-
-        .envelope {
-            position: relative;
-            width: 420px;
-            height: 280px;
-            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.8));
-            animation: envelopeGlow 3s ease-in-out infinite, envelopeFloat 4s ease-in-out infinite;
-            transform-style: preserve-3d;
-        }
-
-        .envelope-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #f8f0e8 0%, #e8d4c0 50%, #d4b5a0 100%);
-            border-radius: 8px;
-            box-shadow: 
-                0 15px 50px rgba(0, 0, 0, 0.4),
-                inset 0 2px 10px rgba(255, 255, 255, 0.3),
-                inset 0 -2px 10px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .envelope-flap {
-            position: absolute;
-            width: 0;
-            height: 0;
-            border-left: 210px solid transparent;
-            border-right: 210px solid transparent;
-            border-bottom: 170px solid #c4a484;
-            top: 0;
-            left: 0;
-            transform-origin: top center;
-            z-index: 3;
-            filter: drop-shadow(0 0 15px rgba(196, 164, 132, 0.6));
-            animation: autoOpen 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 3.5s forwards;
-            border-radius: 0 0 8px 8px;
-        }
-
-        .envelope-flap::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -210px;
-            width: 0;
-            height: 0;
-            border-left: 210px solid transparent;
-            border-right: 210px solid transparent;
-            border-bottom: 170px solid #b89a7a;
-            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.2));
-        }
-
-        .letter {
-            position: absolute;
-            width: 370px;
-            height: 450px;
-            background: linear-gradient(135deg, #fff 0%, #fffaf0 50%, #f5f5dc 100%);
-            top: 40px;
-            left: 25px;
-            border-radius: 8px;
-            padding: 45px;
-            box-shadow: 
-                0 8px 25px rgba(0, 0, 0, 0.3),
-                inset 0 1px 5px rgba(255, 255, 255, 0.8),
-                inset 0 -1px 5px rgba(0, 0, 0, 0.1);
-            z-index: 2;
-            transform: translateY(0) rotateX(0deg);
-            border: 2px solid rgba(255, 215, 0, 0.4);
-            animation: autoLetterOpen 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 4.2s forwards;
-            transform-style: preserve-3d;
-        }
-
-        .letter::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 50px;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, transparent 100%);
-            border-radius: 8px 8px 0 0;
-        }
-
-        .letter::after {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 5px;
-            pointer-events: none;
-        }
-
-        .letter-content {
-            text-align: center;
-            color: #333;
-        }
-
-        .letter-title {
-            font-size: 2.5em;
-            background: linear-gradient(45deg, #ff6b9d, #c06c84, #ff1493, #ff6b9d);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 25px;
-            font-weight: bold;
-            font-family: 'Pacifico', cursive;
-            animation: textShimmer 3s ease-in-out infinite;
-            filter: drop-shadow(0 0 8px rgba(255, 107, 157, 0.6));
-        }
-
-        .letter-text {
-            font-size: 1.4em;
-            line-height: 2;
-            color: #555;
-            font-family: 'Dancing Script', cursive;
-            font-weight: 700;
-        }
-
-        .letter-name {
-            background: linear-gradient(45deg, #ff6b9d, #ffd700, #ff1493, #ff6b9d);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: bold;
-            font-size: 1.5em;
-            animation: textShimmer 3s ease-in-out infinite;
-            filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.8));
-            font-family: 'Pacifico', cursive;
-        }
-
-        .letter-decoration {
-            font-size: 3.2em;
-            margin: 20px 0;
-            animation: decorationSpin 3s ease-in-out infinite;
-            display: inline-block;
-            filter: drop-shadow(0 0 10px rgba(255, 107, 157, 0.8));
-        }
-
-        .container {
-            text-align: center;
-            z-index: 10;
-            position: relative;
-            opacity: 0;
-            transform: scale(0);
-            transition: all 1s ease;
-        }
-
-        .container.show {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .title {
-            font-size: 5em;
-            background: linear-gradient(45deg, #fff, #ff6b9d, #ffd700, #fff);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 60px;
-            animation: fadeInDown 1s ease-out, textShimmer 3s ease-in-out infinite;
-            font-weight: bold;
-            filter: drop-shadow(0 0 20px rgba(255, 107, 157, 0.8));
-            font-family: 'Pacifico', cursive;
-        }
-
-        .heart-container {
-            position: relative;
-            width: 500px;
-            height: 500px;
-            margin: 0 auto;
-            cursor: grab;
-            perspective: 5000px;
-            filter: drop-shadow(0 0 80px rgba(255, 107, 157, 0.8));
-        }
-
-        .three-heart-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .three-heart-container canvas {
-            border-radius: 50%;
-            filter: drop-shadow(0 0 50px rgba(255, 107, 157, 0.6));
-        }
-
-        .vapor-glow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 600px;
-            height: 600px;
-            transform: translate(-50%, -50%);
-            background: radial-gradient(circle, 
-                rgba(255, 107, 157, 0.1) 0%, 
-                rgba(255, 20, 147, 0.05) 30%, 
-                rgba(138, 43, 226, 0.03) 60%, 
-                transparent 100%);
-            border-radius: 50%;
-            animation: vaporPulse 4s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .lens-flare {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 200px;
-            height: 200px;
-            transform: translate(-50%, -50%);
-            background: radial-gradient(circle, 
-                rgba(255, 255, 255, 0.3) 0%, 
-                rgba(255, 215, 0, 0.2) 20%, 
-                rgba(255, 107, 157, 0.1) 40%, 
-                transparent 70%);
-            border-radius: 50%;
-            animation: lensFlare 6s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .title {
-            font-size: 5em;
-            background: linear-gradient(45deg, #fff, #ff6b9d, #ffd700, #fff);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 60px;
-            animation: fadeInDown 1s ease-out, textShimmer 3s ease-in-out infinite, titleGlow 2s ease-in-out infinite;
-            font-weight: bold;
-            filter: drop-shadow(0 0 20px rgba(255, 107, 157, 0.8));
-            font-family: 'Pacifico', cursive;
-        }
-
-        .heart-container:active {
-            cursor: grabbing;
-        }
-
-        .heart-wrapper {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.02s ease-out;
-            transform-style: preserve-3d;
-            animation: heartFloat 6s ease-in-out infinite, heartRotate 20s linear infinite;
-        }
-
-        .heart-beat {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 200px;
-            height: 200px;
-            transform: translate(-50%, -50%);
-            background: radial-gradient(circle, 
-                rgba(255, 107, 157, 0.8) 0%, 
-                rgba(255, 20, 147, 0.6) 30%, 
-                rgba(138, 43, 226, 0.4) 60%, 
-                transparent 100%);
-            border-radius: 50%;
-            animation: realHeartbeat 0.8s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .heart-beat::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 150px;
-            height: 150px;
-            transform: translate(-50%, -50%);
-            background: radial-gradient(circle, 
-                rgba(255, 107, 157, 0.6) 0%, 
-                rgba(255, 20, 147, 0.4) 40%, 
-                transparent 70%);
-            border-radius: 50%;
-            animation: realHeartbeat 0.8s ease-in-out infinite 0.1s;
-        }
-
-        .heart-beat::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100px;
-            height: 100px;
-            transform: translate(-50%, -50%);
-            background: radial-gradient(circle, 
-                rgba(255, 107, 157, 0.4) 0%, 
-                rgba(255, 20, 147, 0.2) 50%, 
-                transparent 80%);
-            border-radius: 50%;
-            animation: realHeartbeat 0.8s ease-in-out infinite 0.2s;
-        }
-
-        .heart-star {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: radial-gradient(circle, #ffffff 0%, #ff69b4 15%, #ff1493 30%, #ff6b9d 50%, transparent 70%);
-            border-radius: 50%;
-            box-shadow: 
-                0 0 6px #ffffff,
-                0 0 12px #ff69b4,
-                0 0 18px #ff1493,
-                0 0 24px #ff6b9d,
-                0 0 30px #ffc0cb;
-            opacity: 0;
-            filter: brightness(1.5);
-        }
-
-        .heart-star.animate {
-            animation: formHeart 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards, 
-                       heartStarTwinkle 0.8s ease-in-out infinite,
-                       heartStarPulse 2s ease-in-out infinite;
-        }
-
-        .heart-star::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 1px;
-            height: 1px;
-            background: #ffffff;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 4px #ffffff, 0 0 8px #ff69b4;
-        }
-
-        .outer-heart-stars {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .outer-star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: radial-gradient(circle, #ffffff 0%, #ff69b4 40%, transparent 70%);
-            border-radius: 50%;
-            box-shadow: 
-                0 0 4px #ffffff,
-                0 0 8px #ff69b4,
-                0 0 12px #ff1493;
-            animation: outerStarTwinkle 3s ease-in-out infinite, outerStarOrbit 15s linear infinite;
-        }
-
-        .cosmic-particle {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 105, 180, 0.8) 0%, transparent 70%);
-            animation: floatAround ease-in-out infinite;
-        }
-
-        .galaxy-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            border: 2px solid rgba(255, 107, 157, 0.25);
-            animation: rotateGalaxy linear infinite;
-        }
-
-        .envelope-wrapper.hide {
-            animation: envelopeExit 1s ease-in forwards;
-        }
-
-        @keyframes autoOpen {
-            0% {
-                transform: rotateX(0deg) scale(1);
-            }
-            30% {
-                transform: rotateX(45deg) scale(1.02);
-            }
-            70% {
-                transform: rotateX(135deg) scale(1.05);
-            }
-            100% {
-                transform: rotateX(180deg) scale(1);
-            }
-        }
-
-        @keyframes autoLetterOpen {
-            0% {
-                transform: translateY(0) rotateX(0deg) scale(1);
-                opacity: 1;
-            }
-            20% {
-                transform: translateY(-20px) rotateX(-5deg) scale(1.02);
-                opacity: 1;
-            }
-            50% {
-                transform: translateY(-200px) rotateX(-10deg) scale(1.05);
-                opacity: 0.9;
-            }
-            80% {
-                transform: translateY(-400px) rotateX(-5deg) scale(1.08);
-                opacity: 0.7;
-            }
-            100% {
-                transform: translateY(-450px) rotateX(0deg) scale(1.1);
-                opacity: 0.5;
-            }
-        }
-
-        @keyframes envelopeEntry {
-            0% {
-                opacity: 0;
-                transform: translateY(-150px) scale(0.3) rotate(-15deg) rotateX(45deg);
-                filter: blur(10px);
-            }
-            30% {
-                opacity: 0.7;
-                transform: translateY(-50px) scale(0.8) rotate(-5deg) rotateX(20deg);
-                filter: blur(3px);
-            }
-            60% {
-                opacity: 0.9;
-                transform: translateY(20px) scale(1.1) rotate(2deg) rotateX(-5deg);
-                filter: blur(1px);
-            }
-            80% {
-                opacity: 1;
-                transform: translateY(-10px) scale(0.95) rotate(-1deg) rotateX(2deg);
-                filter: blur(0px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1) rotate(0deg) rotateX(0deg);
-                filter: blur(0px);
-            }
-        }
-
-        @keyframes envelopeGlow {
-            0%, 100% { 
-                filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.6)) 
-                        drop-shadow(0 0 40px rgba(255, 107, 157, 0.3));
-            }
-            50% { 
-                filter: drop-shadow(0 0 35px rgba(255, 215, 0, 0.9)) 
-                        drop-shadow(0 0 60px rgba(255, 107, 157, 0.5));
-            }
-        }
-
-        @keyframes envelopeFloat {
-            0%, 100% {
-                transform: translateY(0px) rotate(0deg);
-            }
-            25% {
-                transform: translateY(-8px) rotate(1deg);
-            }
-            50% {
-                transform: translateY(-5px) rotate(0deg);
-            }
-            75% {
-                transform: translateY(-12px) rotate(-1deg);
-            }
-        }
-
-        @keyframes envelopeExit {
-            0% {
-                opacity: 1;
-                transform: scale(1) rotate(0deg) rotateX(0deg);
-                filter: blur(0px);
-            }
-            30% {
-                opacity: 0.8;
-                transform: scale(0.9) rotate(5deg) rotateX(10deg);
-                filter: blur(1px);
-            }
-            70% {
-                opacity: 0.4;
-                transform: scale(0.6) rotate(10deg) rotateX(20deg);
-                filter: blur(3px);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(0.3) rotate(15deg) rotateX(30deg);
-                filter: blur(8px);
-            }
-        }
-
-        @keyframes textShimmer {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        @keyframes decorationSpin {
-            0%, 100% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(15deg) scale(1.1); }
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes realHeartbeat {
-            0% { 
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0.8;
-            }
-            15% { 
-                transform: translate(-50%, -50%) scale(1.15);
-                opacity: 1;
-            }
-            30% { 
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0.8;
-            }
-            45% { 
-                transform: translate(-50%, -50%) scale(1.2);
-                opacity: 1;
-            }
-            60% { 
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0.8;
-            }
-            100% { 
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0.8;
-            }
-        }
-
-        @keyframes heartAppear {
-            0% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0) rotate(0deg);
-            }
-            20% {
-                opacity: 0.3;
-                transform: translate(-50%, -50%) scale(0.3) rotate(72deg);
-            }
-            40% {
-                opacity: 0.6;
-                transform: translate(-50%, -50%) scale(0.6) rotate(144deg);
-            }
-            60% {
-                opacity: 0.8;
-                transform: translate(-50%, -50%) scale(0.8) rotate(216deg);
-            }
-            80% {
-                opacity: 0.9;
-                transform: translate(-50%, -50%) scale(0.9) rotate(288deg);
-            }
-            100% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1) rotate(360deg);
-            }
-        }
-
-        @keyframes heartFloat {
-            0%, 100% {
-                transform: translateY(0px) rotate(0deg);
-            }
-            25% {
-                transform: translateY(-10px) rotate(1deg);
-            }
-            50% {
-                transform: translateY(-5px) rotate(0deg);
-            }
-            75% {
-                transform: translateY(-15px) rotate(-1deg);
-            }
-        }
-
-        @keyframes heartRotate {
-            0% {
-                transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-            }
-            25% {
-                transform: rotateX(15deg) rotateY(90deg) rotateZ(45deg);
-            }
-            50% {
-                transform: rotateX(0deg) rotateY(180deg) rotateZ(90deg);
-            }
-            75% {
-                transform: rotateX(-15deg) rotateY(270deg) rotateZ(135deg);
-            }
-            100% {
-                transform: rotateX(0deg) rotateY(360deg) rotateZ(180deg);
-            }
-        }
-
-        @keyframes outerStarTwinkle {
-            0%, 100% {
-                opacity: 0.3;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.5);
-            }
-        }
-
-        @keyframes outerStarOrbit {
-            0% {
-                transform: rotate(0deg) translateX(300px) rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg) translateX(300px) rotate(-360deg);
-            }
-        }
-
-        @keyframes vaporPulse {
-            0%, 100% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0.3;
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.2);
-                opacity: 0.6;
-            }
-        }
-
-        @keyframes lensFlare {
-            0%, 100% {
-                transform: translate(-50%, -50%) scale(0.8) rotate(0deg);
-                opacity: 0.4;
-            }
-            25% {
-                transform: translate(-50%, -50%) scale(1.1) rotate(90deg);
-                opacity: 0.7;
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.3) rotate(180deg);
-                opacity: 0.5;
-            }
-            75% {
-                transform: translate(-50%, -50%) scale(1.0) rotate(270deg);
-                opacity: 0.6;
-            }
-        }
-
-        @keyframes titleGlow {
-            0%, 100% {
-                filter: drop-shadow(0 0 20px rgba(255, 107, 157, 0.8));
-                transform: scale(1);
-            }
-            50% {
-                filter: drop-shadow(0 0 40px rgba(255, 107, 157, 1)) drop-shadow(0 0 60px rgba(255, 20, 147, 0.6));
-                transform: scale(1.02);
-            }
-        }
-
-        @keyframes cameraTiltUp {
-            0% {
-                transform: perspective(1000px) rotateX(0deg) translateY(0px);
-            }
-            100% {
-                transform: perspective(1000px) rotateX(-5deg) translateY(-20px);
-            }
-        }
-
-        @keyframes subtleOrbit {
-            0% {
-                transform: perspective(1000px) rotateY(0deg);
-            }
-            25% {
-                transform: perspective(1000px) rotateY(2deg);
-            }
-            50% {
-                transform: perspective(1000px) rotateY(0deg);
-            }
-            75% {
-                transform: perspective(1000px) rotateY(-2deg);
-            }
-            100% {
-                transform: perspective(1000px) rotateY(0deg);
-            }
-        }
-
-        @keyframes formHeart {
-            from {
-                transform: translate(var(--startX), var(--startY)) scale(0) rotate(0deg);
-                opacity: 0;
-            }
-            30% {
-                transform: translate(calc(var(--startX) * 0.7), calc(var(--startY) * 0.7)) scale(0.3) rotate(180deg);
-                opacity: 0.5;
-            }
-            60% {
-                transform: translate(calc(var(--startX) * 0.3), calc(var(--startY) * 0.3)) scale(0.7) rotate(450deg);
-                opacity: 0.8;
-            }
-            to {
-                transform: translate(0, 0) scale(1) rotate(720deg);
-                opacity: 1;
-            }
-        }
-
-        @keyframes heartStarTwinkle {
-            0%, 100% { 
-                filter: brightness(1.2);
-                transform: scale(1);
-                box-shadow: 
-                    0 0 8px #ffffff,
-                    0 0 16px #ff69b4,
-                    0 0 24px #ff1493,
-                    0 0 32px #ff6b9d;
-            }
-            50% { 
-                filter: brightness(2.5);
-                transform: scale(2.2);
-                box-shadow: 
-                    0 0 12px #ffffff,
-                    0 0 24px #ff69b4,
-                    0 0 36px #ff1493,
-                    0 0 48px #ff6b9d,
-                    0 0 60px #ff69b4;
-            }
-        }
-
-        @keyframes heartStarPulse {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.3);
-                opacity: 0.8;
-            }
-        }
-
-        @keyframes starFloat {
-            0%, 100% {
-                transform: translateY(0px) translateX(0px);
-            }
-            25% {
-                transform: translateY(-3px) translateX(2px);
-            }
-            50% {
-                transform: translateY(-1px) translateX(-1px);
-            }
-            75% {
-                transform: translateY(-4px) translateX(1px);
-            }
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.5); }
-        }
-
-        @keyframes nebulaFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
-            33% { transform: translate(50px, -30px) scale(1.2); opacity: 0.6; }
-            66% { transform: translate(-30px, 40px) scale(0.9); opacity: 0.5; }
-        }
-
-        @keyframes floatAround {
-            0%, 100% { transform: translate(0, 0); }
-            25% { transform: translate(30px, -30px); }
-            50% { transform: translate(60px, 0); }
-            75% { transform: translate(30px, 30px); }
-        }
-
-        @keyframes rotateGalaxy {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        @keyframes shoot {
-            from {
-                transform: translateX(0) translateY(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(300px) translateY(300px);
-                opacity: 0;
-            }
-        }
-
-        @keyframes fall {
-            from {
-                top: -100px;
-                transform: translateX(0) rotate(0deg);
-            }
-            to {
-                top: 110vh;
-                transform: translateX(var(--drift)) rotate(360deg);
-            }
-        }
-
-        @keyframes teddyFloat {
-            0%, 100% {
-                transform: translateX(0) rotate(0deg) scale(1);
-            }
-            25% {
-                transform: translateX(10px) rotate(5deg) scale(1.1);
-            }
-            50% {
-                transform: translateX(-5px) rotate(-3deg) scale(0.9);
-            }
-            75% {
-                transform: translateX(8px) rotate(3deg) scale(1.05);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .envelope {
-                width: 350px;
-                height: 230px;
-            }
-            .envelope-flap {
-                border-left: 175px solid transparent;
-                border-right: 175px solid transparent;
-                border-bottom: 140px solid #c4a484;
-            }
-            .envelope-flap::before {
-                left: -175px;
-                border-left: 175px solid transparent;
-                border-right: 175px solid transparent;
-                border-bottom: 140px solid #b89a7a;
-            }
-            .letter {
-                width: 300px;
-                height: 380px;
-                padding: 35px;
-            }
-            .letter-title {
-                font-size: 2.2em;
-            }
-            .letter-text {
-                font-size: 1.2em;
-            }
-            .title {
-                font-size: 4em;
-            }
-            .heart-container {
-                width: 400px;
-                height: 400px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .envelope {
-                width: 280px;
-                height: 190px;
-            }
-            .envelope-flap {
-                border-left: 140px solid transparent;
-                border-right: 140px solid transparent;
-                border-bottom: 112px solid #c4a484;
-            }
-            .envelope-flap::before {
-                left: -140px;
-                border-left: 140px solid transparent;
-                border-right: 140px solid transparent;
-                border-bottom: 112px solid #b89a7a;
-            }
-            .letter {
-                width: 240px;
-                height: 320px;
-                padding: 30px;
-            }
-            .letter-title {
-                font-size: 1.8em;
-            }
-            .letter-text {
-                font-size: 1.1em;
-            }
-            .title {
-                font-size: 3em;
-            }
-            .heart-container {
-                width: 350px;
-                height: 350px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💖 Hương Lan 💖</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@700&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  width:100vw;height:100vh;overflow:hidden;
+  background:radial-gradient(circle at 50% 30%,#0a0a0a 0%,#000 90%);
+  display:flex;justify-content:center;align-items:center;flex-direction:column;
+  font-family:'Pacifico',cursive;color:#fff;position:relative;
+}
+
+/* === Envelope Styles === */
+.envelope-wrapper {
+  position:absolute;z-index:100;
+  animation:envelopeEntry 3s cubic-bezier(0.25,0.46,0.45,0.94);
+  transform-style:preserve-3d;
+}
+.envelope {
+  position:relative;width:420px;height:280px;
+  filter:drop-shadow(0 0 25px rgba(255,215,0,0.8));
+  animation:envelopeGlow 3s ease-in-out infinite,envelopeFloat 4s ease-in-out infinite;
+  transform-style:preserve-3d;
+}
+.envelope-back {
+  position:absolute;width:100%;height:100%;
+  background:linear-gradient(135deg,#f8f0e8 0%,#e8d4c0 50%,#d4b5a0 100%);
+  border-radius:8px;
+  box-shadow:0 15px 50px rgba(0,0,0,0.4),inset 0 2px 10px rgba(255,255,255,0.3);
+  border:1px solid rgba(255,255,255,0.2);
+}
+.envelope-flap {
+  position:absolute;width:0;height:0;
+  border-left:210px solid transparent;
+  border-right:210px solid transparent;
+  border-bottom:170px solid #c4a484;
+  top:0;left:0;transform-origin:top center;z-index:3;
+  filter:drop-shadow(0 0 15px rgba(196,164,132,0.6));
+  animation:autoOpen 2s cubic-bezier(0.25,0.46,0.45,0.94) 3.5s forwards;
+}
+.letter {
+  position:absolute;width:370px;height:450px;
+  background:linear-gradient(135deg,#fff 0%,#fffaf0 50%,#f5f5dc 100%);
+  top:40px;left:25px;border-radius:8px;padding:45px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.3);z-index:2;
+  border:2px solid rgba(255,215,0,0.4);
+  animation:autoLetterOpen 2.5s cubic-bezier(0.25,0.46,0.45,0.94) 4.2s forwards;
+  transform-style:preserve-3d;
+}
+.letter-content{text-align:center;color:#333;}
+.letter-title {
+  font-size:2.5em;
+  background:linear-gradient(45deg,#ff6b9d,#c06c84,#ff1493,#ff6b9d);
+  background-size:300% 300%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:25px;font-weight:bold;font-family:'Pacifico',cursive;
+  animation:textShimmer 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 8px rgba(255,107,157,0.6));
+}
+.letter-text {
+  font-size:1.4em;line-height:2;color:#555;
+  font-family:'Dancing Script',cursive;font-weight:700;
+}
+.letter-name {
+  background:linear-gradient(45deg,#ff6b9d,#ffd700,#ff1493,#ff6b9d);
+  background-size:300% 300%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  font-weight:bold;font-size:1.5em;
+  animation:textShimmer 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 6px rgba(255,215,0,0.8));
+  font-family:'Pacifico',cursive;
+}
+.letter-decoration {
+  font-size:3.2em;margin:20px 0;
+  animation:decorationSpin 3s ease-in-out infinite;
+  display:inline-block;
+  filter:drop-shadow(0 0 10px rgba(255,107,157,0.8));
+}
+.envelope-wrapper.hide{animation:envelopeExit 1s ease-in forwards;}
+
+/* === Stars Background === */
+.stars-bg{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:1;opacity:0;transition:opacity 2s;
+}
+.stars-bg.show{opacity:1;}
+.star-bg{
+  position:absolute;
+  background:radial-gradient(circle,#fff 0%,transparent 70%);
+  border-radius:50%;
+  animation:twinkle 3s ease-in-out infinite;
+  box-shadow:0 0 6px rgba(255,255,255,0.8);
+}
+
+/* === Teddy Bear === */
+.teddy-bear{
+  position:fixed;font-size:2.5em;z-index:5;
+  animation:fall linear forwards,teddyFloat 3s ease-in-out infinite;
+  filter:drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+  pointer-events:none;
+}
+
+/* === Shooting Star === */
+.shooting-star{
+  position:fixed;width:2px;height:2px;background:white;
+  border-radius:50%;box-shadow:0 0 10px 2px rgba(255,255,255,0.8);
+  animation:shoot linear;pointer-events:none;z-index:4;
+}
+
+/* === Main Container === */
+.container{
+  text-align:center;z-index:10;position:relative;
+  opacity:0;transform:scale(0);transition:all 1s ease;
+}
+.container.show{opacity:1;transform:scale(1);}
+
+.title{
+  font-size:3.5em;
+  background:linear-gradient(45deg,#fff,#ff6b9d,#ffd700,#fff);
+  background-size:300% 300%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  animation:shine 5s infinite alternate,titleGlow 2s ease-in-out infinite;
+  margin-bottom:20px;
+  filter:drop-shadow(0 0 20px rgba(255,107,157,0.8));
+  z-index:10;position:relative;
+}
+
+.scene{
+  position:relative;width:600px;height:600px;z-index:5;
+}
+.scene canvas{border-radius:50%;z-index:2;position:relative;}
+
+.vapor{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:800px;height:800px;
+  background:radial-gradient(circle,rgba(255,107,157,0.15)0%,rgba(255,20,147,0.1)40%,transparent 80%);
+  border-radius:50%;
+  animation:vapor 5s ease-in-out infinite;
+  z-index:1;
+}
+
+.lens{
+  position:absolute;top:50%;left:50%;
+  width:300px;height:300px;
+  background:radial-gradient(circle,rgba(255,255,255,0.4)0%,rgba(255,215,0,0.2)25%,rgba(255,107,157,0.1)50%,transparent 100%);
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  animation:flare 4s ease-in-out infinite;
+  z-index:3;
+}
+
+.text{
+  font-family:'Dancing Script',cursive;
+  font-size:2.2em;margin-top:30px;color:#ffd6f8;
+  opacity:0;
+  animation:fadeIn 2s ease-in forwards 3s,glow 8s infinite ease-in-out 5s;
+  z-index:10;position:relative;text-align:center;
+}
+
+.instruction{
+  position:fixed;bottom:30px;font-size:1.1em;color:#ff69b4;
+  opacity:0;
+  animation:fadeIn 1s ease-in forwards 2s,pulse 2s ease-in-out infinite 3s;
+  z-index:10;text-shadow:0 0 15px rgba(255,105,180,0.8);
+}
+
+.firework{
+  position:fixed;width:4px;height:4px;border-radius:50%;
+  pointer-events:none;z-index:100;
+}
+
+/* === Animations === */
+@keyframes envelopeEntry{
+  0%{opacity:0;transform:translateY(-150px)scale(0.3)rotate(-15deg);filter:blur(10px);}
+  60%{opacity:0.9;transform:translateY(20px)scale(1.1)rotate(2deg);filter:blur(1px);}
+  100%{opacity:1;transform:translateY(0)scale(1)rotate(0deg);filter:blur(0px);}
+}
+@keyframes envelopeGlow{
+  0%,100%{filter:drop-shadow(0 0 25px rgba(255,215,0,0.6));}
+  50%{filter:drop-shadow(0 0 35px rgba(255,215,0,0.9));}
+}
+@keyframes envelopeFloat{
+  0%,100%{transform:translateY(0px)rotate(0deg);}
+  50%{transform:translateY(-8px)rotate(1deg);}
+}
+@keyframes autoOpen{
+  0%{transform:rotateX(0deg);}
+  100%{transform:rotateX(180deg);}
+}
+@keyframes autoLetterOpen{
+  0%{transform:translateY(0)rotateX(0deg);opacity:1;}
+  100%{transform:translateY(-450px)rotateX(0deg)scale(1.1);opacity:0.5;}
+}
+@keyframes envelopeExit{
+  0%{opacity:1;transform:scale(1);}
+  100%{opacity:0;transform:scale(0.3)rotate(15deg);filter:blur(8px);}
+}
+@keyframes textShimmer{
+  0%,100%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+}
+@keyframes decorationSpin{
+  0%,100%{transform:rotate(0deg)scale(1);}
+  50%{transform:rotate(15deg)scale(1.1);}
+}
+@keyframes shine{
+  0%{background-position:0% 50%;}
+  100%{background-position:100% 50%;}
+}
+@keyframes titleGlow{
+  0%,100%{filter:drop-shadow(0 0 20px rgba(255,107,157,0.8));}
+  50%{filter:drop-shadow(0 0 40px rgba(255,107,157,1));}
+}
+@keyframes vapor{
+  0%,100%{transform:translate(-50%,-50%)scale(1);opacity:0.3;}
+  50%{transform:translate(-50%,-50%)scale(1.3);opacity:0.6;}
+}
+@keyframes flare{
+  0%,100%{opacity:0.4;transform:translate(-50%,-50%)scale(1);}
+  50%{opacity:0.8;transform:translate(-50%,-50%)scale(1.4);}
+}
+@keyframes fadeIn{to{opacity:1;}}
+@keyframes glow{
+  0%,100%{text-shadow:0 0 10px #ffb6c1,0 0 30px #ff69b4;}
+  50%{text-shadow:0 0 25px #ffd700,0 0 60px #ff1493;}
+}
+@keyframes pulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.05);}
+}
+@keyframes twinkle{
+  0%,100%{opacity:0.3;transform:scale(1);}
+  50%{opacity:1;transform:scale(1.5);}
+}
+@keyframes shoot{
+  from{transform:translateX(0)translateY(0);opacity:1;}
+  to{transform:translateX(300px)translateY(300px);opacity:0;}
+}
+@keyframes fall{
+  from{top:-100px;transform:translateX(0)rotate(0deg);}
+  to{top:110vh;transform:translateX(var(--drift))rotate(360deg);}
+}
+@keyframes teddyFloat{
+  0%,100%{transform:translateX(0)rotate(0deg)scale(1);}
+  50%{transform:translateX(10px)rotate(5deg)scale(1.1);}
+}
+
+/* === Nebula Effect === */
+.nebula{
+  position:fixed;width:100%;height:100%;
+  opacity:0;transition:opacity 2s;z-index:2;pointer-events:none;
+}
+.nebula.show{opacity:1;}
+.nebula-cloud{
+  position:absolute;border-radius:50%;filter:blur(60px);
+  animation:nebulaFloat ease-in-out infinite;
+}
+@keyframes nebulaFloat{
+  0%,100%{transform:translate(0,0)scale(1);opacity:0.4;}
+  50%{transform:translate(50px,-30px)scale(1.2);opacity:0.6;}
+}
+
+/* === Heart Stars === */
+.heart-star{
+  position:absolute;width:3px;height:3px;
+  background:radial-gradient(circle,#fff 0%,#ff69b4 30%,transparent 70%);
+  border-radius:50%;
+  box-shadow:0 0 6px #fff,0 0 12px #ff69b4;
+  animation:starTwinkle 2s ease-in-out infinite;
+}
+@keyframes starTwinkle{
+  0%,100%{opacity:0.6;transform:scale(1);}
+  50%{opacity:1;transform:scale(1.5);}
+}
+
+@media (max-width:768px){
+  .envelope{width:350px;height:230px;}
+  .envelope-flap{border-left:175px solid transparent;border-right:175px solid transparent;}
+  .letter{width:300px;height:380px;padding:35px;}
+  .letter-title{font-size:2.2em;}
+  .title{font-size:2.5em;}
+  .scene{width:400px;height:400px;}
+  .instruction{font-size:0.9em;}
+}
+@media (max-width:480px){
+  .envelope{width:280px;height:190px;}
+  .letter{width:240px;height:320px;}
+  .title{font-size:2em;}
+  .scene{width:350px;height:350px;}
+  .instruction{font-size:0.8em;bottom:20px;}
+  .text{font-size:1.8em;}
+}
+</style>
 </head>
 <body>
-    <div class="space-background" id="spaceBackground"></div>
-    <div class="stars" id="stars"></div>
-    <div class="nebula" id="nebula"></div>
+<div class="stars-bg" id="starsBg"></div>
+<div class="nebula" id="nebula"></div>
 
-    <div class="envelope-wrapper" id="envelopeWrapper">
-        <div class="envelope">
-            <div class="envelope-back"></div>
-            <div class="letter">
-                <div class="letter-content">
-                    <div class="letter-decoration">🌸</div>
-                    <div class="letter-title">Chúc Mừng 20/10</div>
-                    <div class="letter-text">
-                        Chúc <span class="letter-name">Hương Lan</span><br>
-                        20/10 vui vẻ,<br>
-                        mạnh khỏe xinh đẹp<br>
-                        và ngày càng dễ thương! 💕
-                    </div>
-                    <div class="letter-decoration">🌺</div>
-                </div>
-            </div>
-            <div class="envelope-flap"></div>
+<!-- Envelope -->
+<div class="envelope-wrapper" id="envelopeWrapper">
+  <div class="envelope">
+    <div class="envelope-back"></div>
+    <div class="letter">
+      <div class="letter-content">
+        <div class="letter-decoration">🌸</div>
+        <div class="letter-title">Chúc Mừng 20/10</div>
+        <div class="letter-text">
+          Chúc <span class="letter-name">Hương Lan</span><br>
+          20/10 vui vẻ,<br>
+          mạnh khỏe xinh đẹp<br>
+          và ngày càng dễ thương! 💕
         </div>
+        <div class="letter-decoration">🌺</div>
+      </div>
     </div>
+    <div class="envelope-flap"></div>
+  </div>
+</div>
 
-    <div class="container" id="heartContainer">
-        <h1 class="title">💖 Hương Lan Dễ Thương 💖</h1>
-        <div class="heart-container" id="heartStarsContainer">
-            <div class="vapor-glow"></div>
-            <div class="three-heart-container" id="threeHeartContainer"></div>
-            <div class="lens-flare"></div>
-            <div class="heart-beat" id="heartBeat"></div>
-            <div class="heart-wrapper" id="heartWrapper"></div>
-        </div>
-    </div>
+<!-- Main Scene -->
+<div class="container" id="container">
+  <h1 class="title">💖 Hương Lan 💖</h1>
+  <div class="scene">
+    <div class="vapor"></div>
+    <canvas id="heartCanvas"></canvas>
+    <div class="lens"></div>
+  </div>
+  <p class="text">Trái tim này dành riêng cho em 💕</p>
+  <p class="instruction">✨ Click vào trái tim để xem phép màu ✨</p>
+</div>
 
-    <script>
-        // Professional JavaScript for Enhanced User Experience
-        class HeartAnimationController {
-            constructor() {
-                this.elements = {
-                    envelopeWrapper: document.getElementById('envelopeWrapper'),
-                    heartContainer: document.getElementById('heartContainer'),
-                    spaceBackground: document.getElementById('spaceBackground'),
-                    starsContainer: document.getElementById('stars'),
-                    nebulaContainer: document.getElementById('nebula'),
-                    heartWrapper: document.getElementById('heartWrapper'),
-                    heartStarsContainer: document.getElementById('heartStarsContainer'),
-                    threeHeartContainer: document.getElementById('threeHeartContainer'),
-                    heartBeat: document.getElementById('heartBeat')
-                };
-                
-                this.state = {
-                    isDragging: false,
-                    startX: 0,
-                    startY: 0,
-                    rotationX: 0,
-                    rotationY: 0,
-                    currentRotationX: 0,
-                    currentRotationY: 0,
-                    isAnimationComplete: false,
-                    heartStars: [],
-                    cosmicParticles: [],
-                    galaxyRings: [],
-                    threeScene: null,
-                    threeRenderer: null,
-                    threeCamera: null,
-                    threeHeart: null
-                };
-                
-                this.config = {
-                    starCount: 800,
-                    heartStarCount: 0,
-                    particleCount: 80,
-                    ringCount: 5,
-                    animationDuration: 7000,
-                    heartScale: 10,
-                    centerX: 250,
-                    centerY: 250
-                };
-                
-                this.init();
-            }
-            
-            init() {
-                this.setupEventListeners();
-                this.createStars();
-                this.createNebula();
-                this.initThreeJS();
-                this.startEnvelopeSequence();
-                this.setupPerformanceOptimization();
-            }
-            
-            setupEventListeners() {
-                // Mouse events for heart interaction
-                this.elements.heartStarsContainer.addEventListener('mousedown', (e) => this.handleMouseDown(e));
-                document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
-                document.addEventListener('mouseup', () => this.handleMouseUp());
-                
-                // Touch events for mobile
-                this.elements.heartStarsContainer.addEventListener('touchstart', (e) => this.handleTouchStart(e));
-                document.addEventListener('touchmove', (e) => this.handleTouchMove(e));
-                document.addEventListener('touchend', () => this.handleTouchEnd());
-                
-                // Keyboard events for accessibility
-                document.addEventListener('keydown', (e) => this.handleKeyDown(e));
-                
-                // Window events
-                window.addEventListener('resize', () => this.handleResize());
-                window.addEventListener('beforeunload', () => this.cleanup());
-                
-                // Visibility API for performance
-                document.addEventListener('visibilitychange', () => this.handleVisibilityChange());
-            }
-            
-            handleMouseDown(e) {
-                this.state.isDragging = true;
-                this.state.startX = e.clientX;
-                this.state.startY = e.clientY;
-                this.state.currentRotationX = this.state.rotationX;
-                this.state.currentRotationY = this.state.rotationY;
-                this.elements.heartStarsContainer.style.cursor = 'grabbing';
-            }
-            
-            handleMouseMove(e) {
-                if (this.state.isDragging) {
-                    const deltaX = e.clientX - this.state.startX;
-                    const deltaY = e.clientY - this.state.startY;
-                    this.state.rotationY = this.state.currentRotationY + deltaX * 0.5;
-                    this.state.rotationX = this.state.currentRotationX - deltaY * 0.5;
-                    this.updateHeartRotation();
-                }
-            }
-            
-            handleMouseUp() {
-                this.state.isDragging = false;
-                this.elements.heartStarsContainer.style.cursor = 'grab';
-            }
-            
-            handleTouchStart(e) {
-                e.preventDefault();
-                this.state.isDragging = true;
-                this.state.startX = e.touches[0].clientX;
-                this.state.startY = e.touches[0].clientY;
-                this.state.currentRotationX = this.state.rotationX;
-                this.state.currentRotationY = this.state.rotationY;
-            }
-            
-            handleTouchMove(e) {
-                if (this.state.isDragging) {
-                    e.preventDefault();
-                    const deltaX = e.touches[0].clientX - this.state.startX;
-                    const deltaY = e.touches[0].clientY - this.state.startY;
-                    this.state.rotationY = this.state.currentRotationY + deltaX * 0.5;
-                    this.state.rotationX = this.state.currentRotationX - deltaY * 0.5;
-                    this.updateHeartRotation();
-                }
-            }
-            
-            handleTouchEnd() {
-                this.state.isDragging = false;
-            }
-            
-            handleKeyDown(e) {
-                // Space bar to reset heart rotation
-                if (e.code === 'Space') {
-                    e.preventDefault();
-                    this.resetHeartRotation();
-                }
-                // R key to restart animation
-                if (e.code === 'KeyR') {
-                    e.preventDefault();
-                    this.restartAnimation();
-                }
-            }
-            
-            handleResize() {
-                // Debounce resize events
-                clearTimeout(this.resizeTimeout);
-                this.resizeTimeout = setTimeout(() => {
-                    this.optimizeForScreenSize();
-                }, 250);
-            }
-            
-            handleVisibilityChange() {
-                if (document.hidden) {
-                    this.pauseAnimations();
-                } else {
-                    this.resumeAnimations();
-                }
-            }
-            
-            updateHeartRotation() {
-                this.elements.heartWrapper.style.transform = 
-                    `rotateX(${this.state.rotationX}deg) rotateY(${this.state.rotationY}deg)`;
-                
-                // Update Three.js heart rotation
-                if (this.state.threeHeart) {
-                    this.state.threeHeart.rotation.x = this.state.rotationX * Math.PI / 180;
-                    this.state.threeHeart.rotation.y = this.state.rotationY * Math.PI / 180;
-                }
-            }
-            
-            resetHeartRotation() {
-                this.state.rotationX = 0;
-                this.state.rotationY = 0;
-                this.elements.heartWrapper.style.transition = 'transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                this.updateHeartRotation();
-                setTimeout(() => {
-                    this.elements.heartWrapper.style.transition = 'transform 0.03s ease-out';
-                }, 1000);
-            }
-            
-            restartAnimation() {
-                this.cleanup();
-                this.state.isAnimationComplete = false;
-                this.elements.envelopeWrapper.style.display = 'block';
-                this.elements.envelopeWrapper.classList.remove('hide');
-                this.elements.heartContainer.classList.remove('show');
-                this.elements.spaceBackground.classList.remove('show');
-                this.elements.starsContainer.classList.remove('show');
-                this.elements.nebulaContainer.classList.remove('show');
-                this.startEnvelopeSequence();
-            }
-            
-            pauseAnimations() {
-                document.querySelectorAll('*').forEach(el => {
-                    if (el.style.animationPlayState !== 'paused') {
-                        el.style.animationPlayState = 'paused';
-                    }
-                });
-            }
-            
-            resumeAnimations() {
-                document.querySelectorAll('*').forEach(el => {
-                    if (el.style.animationPlayState === 'paused') {
-                        el.style.animationPlayState = 'running';
-                    }
-                });
-            }
-            
-            optimizeForScreenSize() {
-                const width = window.innerWidth;
-                if (width < 480) {
-                    this.config.starCount = 400;
-                    this.config.particleCount = 40;
-                } else if (width < 768) {
-                    this.config.starCount = 600;
-                    this.config.particleCount = 60;
-                } else {
-                    this.config.starCount = 800;
-                    this.config.particleCount = 80;
-                }
-            }
-            
-            setupPerformanceOptimization() {
-                // Use requestAnimationFrame for smooth animations
-                this.animationFrame = null;
-                this.lastTime = 0;
-                
-                // Intersection Observer for lazy loading
-                if ('IntersectionObserver' in window) {
-                    this.observer = new IntersectionObserver((entries) => {
-                        entries.forEach(entry => {
-                            if (entry.isIntersecting) {
-                                entry.target.classList.add('visible');
-                            }
-                        });
-                    });
-                }
-            }
+<script>
+// === Configuration ===
+const config={
+  envelopeDuration:7000,
+  explosionDelay:5000,
+  orbitDuration:4000,
+  formTextDuration:3000
+};
 
-            createStars() {
-                // Clear existing stars
-                this.elements.starsContainer.innerHTML = '';
-                
-                for (let i = 0; i < this.config.starCount; i++) {
-                    const star = document.createElement('div');
-                    star.className = 'star';
-                    
-                    const size = Math.random() * 4 + 1;
-                    star.style.width = size + 'px';
-                    star.style.height = size + 'px';
-                    star.style.left = Math.random() * 100 + '%';
-                    star.style.top = Math.random() * 100 + '%';
-                    star.style.animationDuration = (Math.random() * 3 + 1) + 's';
-                    star.style.animationDelay = Math.random() * 3 + 's';
-                    
-                    // Tạo ngôi sao với độ sáng khác nhau
-                    const brightness = Math.random() * 0.7 + 0.3;
-                    star.style.opacity = brightness;
-                    
-                    // Thêm hiệu ứng lấp lánh ngẫu nhiên
-                    const twinkleDelay = Math.random() * 2;
-                    star.style.setProperty('--twinkle-delay', twinkleDelay + 's');
-                    
-                    // Add to intersection observer for performance
-                    if (this.observer) {
-                        this.observer.observe(star);
-                    }
-                    
-                    this.elements.starsContainer.appendChild(star);
-                }
-            }
+// === Stars Background ===
+const starsBg=document.getElementById('starsBg');
+const nebula=document.getElementById('nebula');
 
-            createShootingStar() {
-                const star = document.createElement('div');
-                star.className = 'shooting-star';
-                star.style.left = Math.random() * 50 + '%';
-                star.style.top = Math.random() * 50 + '%';
-                star.style.animationDuration = (Math.random() * 1 + 0.5) + 's';
-                document.body.appendChild(star);
-                setTimeout(() => star.remove(), 1500);
-            }
+function createStars(){
+  for(let i=0;i<300;i++){
+    const star=document.createElement('div');
+    star.className='star-bg';
+    const size=Math.random()*3+1;
+    star.style.width=size+'px';
+    star.style.height=size+'px';
+    star.style.left=Math.random()*100+'%';
+    star.style.top=Math.random()*100+'%';
+    star.style.animationDelay=Math.random()*3+'s';
+    star.style.animationDuration=(Math.random()*2+2)+'s';
+    starsBg.appendChild(star);
+  }
+}
+createStars();
 
-            createTeddyBear() {
-                const bears = ['🧸', '🐻', '🐻‍❄️', '💝', '🌹', '✨', '💕', '🎀', '🌸', '🦄', '🎁', '💖', '🐰', '🦋', '🌺', '🍀', '⭐', '🌈', '🎈', '🎊'];
-                const bear = document.createElement('div');
-                bear.className = 'teddy-bear';
-                bear.textContent = bears[Math.floor(Math.random() * bears.length)];
-                bear.style.left = Math.random() * 100 + 'vw';
-                const drift = (Math.random() - 0.5) * 200;
-                bear.style.setProperty('--drift', drift + 'px');
-                const duration = Math.random() * 3 + 5;
-                bear.style.animationDuration = duration + 's, 2.5s';
-                bear.style.animationDelay = Math.random() * 1 + 's';
-                bear.style.fontSize = (Math.random() * 1 + 2) + 'em';
-                document.body.appendChild(bear);
-                setTimeout(() => bear.remove(), duration * 1000);
-            }
+// === Nebula Clouds ===
+function createNebula(){
+  const colors=[
+    'rgba(138,43,226,0.4)',
+    'rgba(255,20,147,0.4)',
+    'rgba(0,191,255,0.4)',
+    'rgba(255,107,157,0.4)',
+    'rgba(148,0,211,0.4)',
+    'rgba(255,215,0,0.3)'
+  ];
+  for(let i=0;i<8;i++){
+    const cloud=document.createElement('div');
+    cloud.className='nebula-cloud';
+    const size=Math.random()*400+250;
+    cloud.style.width=size+'px';
+    cloud.style.height=size+'px';
+    cloud.style.left=Math.random()*100+'%';
+    cloud.style.top=Math.random()*100+'%';
+    cloud.style.background=colors[Math.floor(Math.random()*colors.length)];
+    cloud.style.animationDuration=(Math.random()*15+20)+'s';
+    cloud.style.animationDelay=Math.random()*5+'s';
+    nebula.appendChild(cloud);
+  }
+}
+createNebula();
 
-            createNebula() {
-                const colors = [
-                    'rgba(138, 43, 226, 0.4)',
-                    'rgba(255, 20, 147, 0.4)',
-                    'rgba(0, 191, 255, 0.4)',
-                    'rgba(255, 107, 157, 0.4)',
-                    'rgba(148, 0, 211, 0.4)',
-                    'rgba(255, 215, 0, 0.3)',
-                    'rgba(255, 105, 180, 0.3)'
-                ];
-                
-                for (let i = 0; i < 8; i++) {
-                    const cloud = document.createElement('div');
-                    cloud.className = 'nebula-cloud';
-                    const size = Math.random() * 400 + 250;
-                    cloud.style.width = size + 'px';
-                    cloud.style.height = size + 'px';
-                    cloud.style.left = Math.random() * 100 + '%';
-                    cloud.style.top = Math.random() * 100 + '%';
-                    cloud.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    cloud.style.animationDuration = (Math.random() * 15 + 20) + 's';
-                    cloud.style.animationDelay = Math.random() * 5 + 's';
-                    this.elements.nebulaContainer.appendChild(cloud);
-                }
-            }
+// === Teddy Bears ===
+function createTeddyBear(){
+  const bears=['🧸','🐻','🐻‍❄️','💝','🌹','✨','💕','🎀','🌸','🦄','🎁','💖','🐰','🦋','🌺','🍀','⭐','🌈','🎈','🎊'];
+  const bear=document.createElement('div');
+  bear.className='teddy-bear';
+  bear.textContent=bears[Math.floor(Math.random()*bears.length)];
+  bear.style.left=Math.random()*100+'vw';
+  const drift=(Math.random()-0.5)*200;
+  bear.style.setProperty('--drift',drift+'px');
+  const duration=Math.random()*3+5;
+  bear.style.animationDuration=duration+'s, 2.5s';
+  bear.style.fontSize=(Math.random()*1+2)+'em';
+  document.body.appendChild(bear);
+  setTimeout(()=>bear.remove(),duration*1000);
+}
 
-            createHeartFromStars() {
-                // Clear existing heart elements
-                this.elements.heartWrapper.innerHTML = '';
-                this.state.heartStars = [];
-                this.state.cosmicParticles = [];
-                this.state.galaxyRings = [];
-                
-                const centerX = this.config.centerX;
-                const centerY = this.config.centerY;
-                const scale = this.config.heartScale;
-                
-                // Create heart shape with mathematical precision - more dense
-                for (let t = 0; t < 2 * Math.PI; t += 0.04) {
-                    for (let r = 0; r <= 1; r += 0.08) {
-                        const x = scale * r * 16 * Math.pow(Math.sin(t), 3);
-                        const y = -scale * r * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-                        
-                        const star = document.createElement('div');
-                        star.className = 'heart-star';
-                        
-                        const finalX = centerX + x;
-                        const finalY = centerY + y;
-                        star.style.left = finalX + 'px';
-                        star.style.top = finalY + 'px';
-                        
-                        const startAngle = Math.random() * Math.PI * 2;
-                        const startRadius = 600 + Math.random() * 300;
-                        const startX = Math.cos(startAngle) * startRadius;
-                        const startY = Math.sin(startAngle) * startRadius;
-                        
-                        star.style.setProperty('--startX', startX + 'px');
-                        star.style.setProperty('--startY', startY + 'px');
-                        
-                        // Thêm màu sắc ngẫu nhiên cho ngôi sao
-                        const colors = ['#ff69b4', '#ff1493', '#ff6b9d', '#ffc0cb', '#ffb6c1', '#ffd700', '#ff6347', '#ff1493', '#ff69b4'];
-                        const randomColor = colors[Math.floor(Math.random() * colors.length)];
-                        star.style.setProperty('--star-color', randomColor);
-                        
-                        this.state.heartStars.push(star);
-                        this.elements.heartWrapper.appendChild(star);
-                    }
-                }
-                
-                // Create outer orbiting stars
-                this.createOuterStars(centerX, centerY);
-                
-                // Animate heart stars with staggered timing - faster and smoother
-                this.state.heartStars.forEach((star, index) => {
-                    setTimeout(() => {
-                        star.classList.add('animate');
-                        star.style.animationDelay = `0s, ${Math.random() * 0.8}s, ${Math.random() * 1.5}s`;
-                    }, index * 0.025);
-                });
-                
-                // Create cosmic particles and galaxy rings
-                setTimeout(() => {
-                    this.createCosmicParticles(centerX, centerY);
-                    this.createGalaxyRings();
-                }, 800);
-            }
-            
-            showHeartDirectly() {
-                // Show heart beat effect immediately
-                this.elements.heartBeat.style.animation = 'heartAppear 2s ease-out forwards, realHeartbeat 0.8s ease-in-out infinite 2s';
-                
-                // Show Three.js heart immediately
-                if (this.state.threeHeart) {
-                    this.state.threeHeart.visible = true;
-                }
-                
-                // Create heart stars without formation animation
-                this.createHeartFromStars();
-            }
-            
-            initThreeJS() {
-                if (typeof THREE === 'undefined') {
-                    console.warn('Three.js not loaded');
-                    return;
-                }
-                
-                const container = this.elements.threeHeartContainer;
-                const width = 500;
-                const height = 500;
-                
-                // Scene
-                this.state.threeScene = new THREE.Scene();
-                
-                // Camera
-                this.state.threeCamera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-                this.state.threeCamera.position.z = 2;
-                
-                // Renderer
-                this.state.threeRenderer = new THREE.WebGLRenderer({ 
-                    antialias: true, 
-                    alpha: true,
-                    transparent: true 
-                });
-                this.state.threeRenderer.setSize(width, height);
-                this.state.threeRenderer.setClearColor(0x000000, 0);
-                container.appendChild(this.state.threeRenderer.domElement);
-                
-                // Create 3D heart with particles
-                this.createThreeJSHeart();
-                
-                // Start animation
-                this.animateThreeJS();
-            }
-            
-            createThreeJSHeart() {
-                const particles = 5000;
-                const geometry = new THREE.BufferGeometry();
-                const positions = [];
-                const colors = [];
-                const sizes = [];
-                const opacities = [];
-                
-                for (let i = 0; i < particles; i++) {
-                    const t = Math.random() * Math.PI * 2;
-                    const r = Math.random();
-                    
-                    // Heart equation with depth variation
-                    const x = 16 * Math.pow(Math.sin(t), 3) * r;
-                    const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)) * r;
-                    const z = (Math.random() - 0.5) * 1.0; // Increased depth range
-                    
-                    positions.push(x * 0.08, y * 0.08, z);
-                    
-                    // Enhanced color variation with purple tones
-                    const colorVariation = Math.random();
-                    if (colorVariation < 0.25) {
-                        colors.push(1, 0.4, 0.7); // Pink
-                    } else if (colorVariation < 0.5) {
-                        colors.push(1, 0.08, 0.58); // Deep pink
-                    } else if (colorVariation < 0.7) {
-                        colors.push(1, 0.75, 0.8); // Light pink
-                    } else if (colorVariation < 0.85) {
-                        colors.push(0.8, 0.2, 1); // Purple
-                    } else {
-                        colors.push(1, 1, 0); // Yellow
-                    }
-                    
-                    // Size variation with depth-based scaling
-                    const depthScale = 1 + Math.abs(z) * 0.5;
-                    sizes.push((Math.random() * 0.03 + 0.01) * depthScale);
-                    
-                    // Opacity based on depth (depth of field effect)
-                    const depthOpacity = 1 - Math.abs(z) * 0.3;
-                    opacities.push(Math.max(0.3, depthOpacity));
-                }
-                
-                geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-                geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
-                geometry.setAttribute('opacity', new THREE.Float32BufferAttribute(opacities, 1));
-                
-                // Enhanced material with depth of field
-                const material = new THREE.PointsMaterial({
-                    size: 0.02,
-                    vertexColors: true,
-                    transparent: true,
-                    opacity: 0.9,
-                    blending: THREE.AdditiveBlending,
-                    sizeAttenuation: true,
-                    alphaTest: 0.1
-                });
-                
-                // Create heart
-                this.state.threeHeart = new THREE.Points(geometry, material);
-                this.state.threeHeart.visible = false; // Initially hidden
-                this.state.threeScene.add(this.state.threeHeart);
-            }
-            
-            animateThreeJS() {
-                if (!this.state.threeRenderer || !this.state.threeScene || !this.state.threeCamera) {
-                    return;
-                }
-                
-                requestAnimationFrame(() => this.animateThreeJS());
-                
-                if (this.state.threeHeart) {
-                    // Enhanced rotation with cinematic feel
-                    this.state.threeHeart.rotation.y += 0.003;
-                    this.state.threeHeart.rotation.x += 0.001;
-                    this.state.threeHeart.rotation.z += 0.0005;
-                    
-                    // Subtle camera orbit
-                    const time = Date.now() * 0.0005;
-                    this.state.threeCamera.position.x = Math.sin(time) * 0.1;
-                    this.state.threeCamera.position.y = Math.cos(time * 0.7) * 0.05;
-                    this.state.threeCamera.lookAt(0, 0, 0);
-                }
-                
-                this.state.threeRenderer.render(this.state.threeScene, this.state.threeCamera);
-            }
-            
-            createOuterStars(centerX, centerY) {
-                const outerStarsContainer = document.createElement('div');
-                outerStarsContainer.className = 'outer-heart-stars';
-                
-                // Create multiple rings of orbiting stars
-                for (let ring = 0; ring < 3; ring++) {
-                    const ringRadius = 350 + (ring * 100);
-                    const starCount = 20 + (ring * 10);
-                    
-                    for (let i = 0; i < starCount; i++) {
-                        const star = document.createElement('div');
-                        star.className = 'outer-star';
-                        
-                        const angle = (i / starCount) * Math.PI * 2;
-                        const x = centerX + Math.cos(angle) * ringRadius;
-                        const y = centerY + Math.sin(angle) * ringRadius;
-                        
-                        star.style.left = x + 'px';
-                        star.style.top = y + 'px';
-                        star.style.animationDelay = (Math.random() * 3) + 's';
-                        star.style.animationDuration = `${3 + Math.random() * 2}s, ${15 + ring * 5}s`;
-                        
-                        outerStarsContainer.appendChild(star);
-                    }
-                }
-                
-                this.elements.heartWrapper.appendChild(outerStarsContainer);
-            }
-            
-            createCosmicParticles(centerX, centerY) {
-                for (let i = 0; i < this.config.particleCount; i++) {
-                    const particle = document.createElement('div');
-                    particle.className = 'cosmic-particle';
-                    const size = Math.random() * 8 + 4;
-                    particle.style.width = size + 'px';
-                    particle.style.height = size + 'px';
-                    
-                    const angle = Math.random() * Math.PI * 2;
-                    const radius = Math.random() * 200 + 200;
-                    const x = centerX + Math.cos(angle) * radius;
-                    const y = centerY + Math.sin(angle) * radius;
-                    
-                    particle.style.left = x + 'px';
-                    particle.style.top = y + 'px';
-                    particle.style.animationDuration = (Math.random() * 5 + 5) + 's';
-                    particle.style.animationDelay = Math.random() * 4 + 's';
-                    
-                    this.state.cosmicParticles.push(particle);
-                    this.elements.heartWrapper.appendChild(particle);
-                }
-            }
-            
-            createGalaxyRings() {
-                for (let i = 0; i < this.config.ringCount; i++) {
-                    const ring = document.createElement('div');
-                    ring.className = 'galaxy-ring';
-                    const size = 350 + (i * 100);
-                    ring.style.width = size + 'px';
-                    ring.style.height = size + 'px';
-                    ring.style.animationDuration = (10 + i * 4) + 's';
-                    ring.style.opacity = 0.4 - (i * 0.07);
-                    
-                    this.state.galaxyRings.push(ring);
-                    this.elements.heartWrapper.appendChild(ring);
-                }
-            }
+// === Shooting Stars ===
+function createShootingStar(){
+  const star=document.createElement('div');
+  star.className='shooting-star';
+  star.style.left=Math.random()*50+'%';
+  star.style.top=Math.random()*50+'%';
+  star.style.animationDuration=(Math.random()*1+0.5)+'s';
+  document.body.appendChild(star);
+  setTimeout(()=>star.remove(),1500);
+}
 
-            startEnvelopeSequence() {
-                // Tự động mở thiệp với hiệu ứng chuyên nghiệp
-                setTimeout(() => {
-                    // Thêm hiệu ứng mờ dần trước khi ẩn
-                    this.elements.envelopeWrapper.style.transition = 'all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    this.elements.envelopeWrapper.classList.add('hide');
-                    
-                    // Hiệu ứng chuyển đổi background
-                    setTimeout(() => {
-                        this.elements.spaceBackground.classList.add('show');
-                        this.elements.starsContainer.classList.add('show');
-                        this.elements.nebulaContainer.classList.add('show');
-                    }, 500);
-                    
-                    setTimeout(() => {
-                        this.elements.envelopeWrapper.style.display = 'none';
-                        this.elements.heartContainer.classList.add('show');
-                        
-                        setTimeout(() => {
-                            this.showHeartDirectly();
-                            this.startCinematicEffects();
-                        }, 600);
-                        
-                        // Start continuous animations
-                        this.startContinuousAnimations();
-                    }, 1500);
-                }, this.config.animationDuration);
-            }
-            
-            startContinuousAnimations() {
-                // Shooting stars every 1.2 seconds
-                this.shootingStarInterval = setInterval(() => {
-                    this.createShootingStar();
-                }, 1200);
-                
-                // Teddy bears and gifts every 300ms for very frequent appearance
-                this.teddyBearInterval = setInterval(() => {
-                    this.createTeddyBear();
-                }, 300);
-                
-                // Create multiple teddy bears at once
-                this.multipleTeddyInterval = setInterval(() => {
-                    for (let i = 0; i < 3; i++) {
-                        setTimeout(() => this.createTeddyBear(), i * 100);
-                    }
-                }, 2000);
-                
-                // Random heart pulse effect every 1.5 seconds
-                this.heartPulseInterval = setInterval(() => {
-                    this.createHeartPulse();
-                }, 1500);
-            }
-            
-            createHeartPulse() {
-                const pulse = document.createElement('div');
-                pulse.style.position = 'absolute';
-                pulse.style.top = '50%';
-                pulse.style.left = '50%';
-                pulse.style.width = '20px';
-                pulse.style.height = '20px';
-                pulse.style.background = 'radial-gradient(circle, rgba(255, 107, 157, 0.6) 0%, transparent 70%)';
-                pulse.style.borderRadius = '50%';
-                pulse.style.transform = 'translate(-50%, -50%)';
-                pulse.style.animation = 'heartPulse 2s ease-out forwards';
-                pulse.style.pointerEvents = 'none';
-                pulse.style.zIndex = '1000';
-                
-                this.elements.heartContainer.appendChild(pulse);
-                
-                setTimeout(() => {
-                    pulse.remove();
-                }, 2000);
-            }
-            
-            cleanup() {
-                // Clear all intervals
-                if (this.shootingStarInterval) clearInterval(this.shootingStarInterval);
-                if (this.teddyBearInterval) clearInterval(this.teddyBearInterval);
-                if (this.multipleTeddyInterval) clearInterval(this.multipleTeddyInterval);
-                if (this.heartPulseInterval) clearInterval(this.heartPulseInterval);
-                if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
-                
-                // Clear animation frame
-                if (this.animationFrame) {
-                    cancelAnimationFrame(this.animationFrame);
-                }
-                
-                // Disconnect observer
-                if (this.observer) {
-                    this.observer.disconnect();
-                }
-                
-                // Cleanup Three.js
-                if (this.state.threeRenderer) {
-                    this.state.threeRenderer.dispose();
-                }
-                if (this.state.threeScene) {
-                    this.state.threeScene.clear();
-                }
-                
-                // Clear arrays
-                this.state.heartStars = [];
-                this.state.cosmicParticles = [];
-                this.state.galaxyRings = [];
-            }
-            
-            // Utility methods
-            getRandomColor() {
-                const colors = ['#ff69b4', '#ff1493', '#ff6b9d', '#ffc0cb', '#ffb6c1', '#ffd700', '#ff6347'];
-                return colors[Math.floor(Math.random() * colors.length)];
-            }
-            
-            getRandomPosition() {
-                return {
-                    x: Math.random() * window.innerWidth,
-                    y: Math.random() * window.innerHeight
-                };
-            }
-            
-            startCinematicEffects() {
-                // Add camera tilt-up effect to heart container
-                this.elements.heartContainer.style.animation = 'cameraTiltUp 8s ease-out forwards';
-                
-                // Add subtle orbit to the entire container
-                setTimeout(() => {
-                    this.elements.heartContainer.style.animation += ', subtleOrbit 20s ease-in-out infinite';
-                }, 2000);
-            }
-            
-            // Performance monitoring
-            monitorPerformance() {
-                if ('performance' in window) {
-                    const perfData = performance.getEntriesByType('navigation')[0];
-                    console.log('Page load time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
-                }
-            }
-        }
+// === Three.js Setup ===
+const canvas=document.getElementById('heartCanvas');
+const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+renderer.setSize(600,600);
+renderer.setPixelRatio(window.devicePixelRatio);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(75,1,0.1,1000);
+camera.position.z=3.5;
 
-        // Initialize the application
-        let heartController;
-        
-        // Wait for DOM to be fully loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            heartController = new HeartAnimationController();
-            heartController.monitorPerformance();
-        });
+// === Lights ===
+const ambient=new THREE.AmbientLight(0xffffff,0.5);
+const point1=new THREE.PointLight(0xff1493,2,50);
+point1.position.set(0,2,3);
+const point2=new THREE.PointLight(0xffd700,1.5,50);
+point2.position.set(-2,-2,3);
+const point3=new THREE.PointLight(0xff69b4,1.8,50);
+point3.position.set(2,0,2);
+scene.add(ambient,point1,point2,point3);
 
-        // Add CSS for heart pulse animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes heartPulse {
-                0% {
-                    transform: translate(-50%, -50%) scale(0);
-                    opacity: 1;
-                }
-                100% {
-                    transform: translate(-50%, -50%) scale(20);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
+// === Heart Shape - CORRECT ORIENTATION ===
+const heartShape=new THREE.Shape();
+heartShape.moveTo(0, 0);
+heartShape.bezierCurveTo(0, 0.3, -0.5, 0.3, -0.5, 0);
+heartShape.bezierCurveTo(-0.5, -0.4, -0.3, -0.7, 0, -1);
+heartShape.bezierCurveTo(0.3, -0.7, 0.5, -0.4, 0.5, 0);
+heartShape.bezierCurveTo(0.5, 0.3, 0, 0.3, 0, 0);
+
+const heartGeo=new THREE.ShapeGeometry(heartShape,128); // More segments for smoother
+heartGeo.scale(2.2, 2.2, 2.2); // Larger size
+
+// === Text Points ===
+const textPositions=[];
+function createTextPoints(){
+  const tempCanvas=document.createElement('canvas');
+  tempCanvas.width=800;tempCanvas.height=300;
+  const ctx=tempCanvas.getContext('2d');
+  ctx.fillStyle='#fff';
+  ctx.font='bold 120px "Pacifico"';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('Hương Lan',400,150);
+  
+  const imgData=ctx.getImageData(0,0,800,300);
+  const data=imgData.data;
+  
+  for(let y=0;y<300;y+=3){
+    for(let x=0;x<800;x+=3){
+      const i=(y*800+x)*4;
+      if(data[i+3]>128){
+        const px=(x-400)/150;
+        const py=(150-y)/150;
+        textPositions.push(new THREE.Vector3(px,py,0));
+      }
+    }
+  }
+}
+createTextPoints();
+
+// === Particles ===
+const heartPoints=new THREE.BufferGeometry();
+const verts=[];
+const colors=[];
+const targetPos=[];
+const rosePositions=[];
+const heartPos=heartGeo.attributes.position;
+const heartCount=heartPos.count;
+
+// Create rose bouquet positions - LIKE IMAGE WITH WRAPPING PAPER
+function createRoseBouquet(){
+  const roses=[];
+  const numRoses=15;
+  
+  // === ROSES ARRANGEMENT (top part) ===
+  for(let i=0;i<numRoses;i++){
+    const layer=Math.floor(i/5); // 3 layers
+    const inLayer=i%5;
+    const angle=inLayer/5*Math.PI*2+(layer*0.4);
+    const radius=0.2+layer*0.15;
+    const height=1.0-layer*0.15;
+    
+    const rx=Math.cos(angle)*radius;
+    const rz=Math.sin(angle)*radius;
+    
+    // Rose head - large sphere
+    for(let p=0;p<150;p++){
+      const theta=Math.random()*Math.PI*2;
+      const phi=Math.acos(2*Math.random()-1);
+      const r=0.12+Math.random()*0.04;
+      
+      const px=rx+r*Math.sin(phi)*Math.cos(theta);
+      const py=height+r*Math.cos(phi)*0.7;
+      const pz=rz+r*Math.sin(phi)*Math.sin(theta);
+      roses.push(new THREE.Vector3(px,py,pz));
+    }
+    
+    // Rose center
+    for(let c=0;c<25;c++){
+      const theta=Math.random()*Math.PI*2;
+      const r=Math.random()*0.03;
+      roses.push(new THREE.Vector3(
+        rx+r*Math.cos(theta),
+        height+Math.random()*0.02,
+        rz+r*Math.sin(theta)
+      ));
+    }
+    
+    // Petals edges
+    for(let e=0;e<20;e++){
+      const theta=(e/20)*Math.PI*2;
+      const r=0.14+Math.random()*0.02;
+      roses.push(new THREE.Vector3(
+        rx+r*Math.cos(theta),
+        height+Math.random()*0.05-0.02,
+        rz+r*Math.sin(theta)
+      ));
+    }
+  }
+  
+  // === GREEN LEAVES around roses ===
+  for(let i=0;i<200;i++){
+    const angle=Math.random()*Math.PI*2;
+    const radius=0.35+Math.random()*0.25;
+    const height=0.6+Math.random()*0.4;
+    
+    const lx=Math.cos(angle)*radius+(Math.random()-0.5)*0.15;
+    const ly=height+(Math.random()-0.5)*0.1;
+    const lz=Math.sin(angle)*radius+(Math.random()-0.5)*0.15;
+    roses.push(new THREE.Vector3(lx,ly,lz));
+  }
+  
+  // === STEMS (thin, going down into wrapper) ===
+  for(let i=0;i<numRoses;i++){
+    const layer=Math.floor(i/5);
+    const inLayer=i%5;
+    const angle=inLayer/5*Math.PI*2+(layer*0.4);
+    const startRadius=0.2+layer*0.15;
+    
+    for(let s=0;s<35;s++){
+      const t=s/35;
+      const radius=startRadius*(1-t*0.8);
+      const stemX=Math.cos(angle)*radius;
+      const stemY=0.85-t*1.3;
+      const stemZ=Math.sin(angle)*radius;
+      roses.push(new THREE.Vector3(stemX,stemY,stemZ));
+    }
+  }
+  
+  // === WRAPPING PAPER (beige/brown cone shape) ===
+  for(let i=0;i<400;i++){
+    const angle=Math.random()*Math.PI*2;
+    const heightPos=-0.2-Math.random()*1.0;
+    const radiusAtHeight=0.25+(-heightPos)*0.35; // Cone shape
+    const radius=Math.random()*radiusAtHeight;
+    
+    const wx=Math.cos(angle)*radius;
+    const wy=heightPos;
+    const wz=Math.sin(angle)*radius;
+    roses.push(new THREE.Vector3(wx,wy,wz));
+  }
+  
+  // === PAPER TEXTURE (wrinkles and folds) ===
+  for(let i=0;i<300;i++){
+    const angle=Math.random()*Math.PI*2;
+    const heightPos=-0.3-Math.random()*0.9;
+    const radiusAtHeight=0.28+(-heightPos)*0.35;
+    const radius=radiusAtHeight+Math.random()*0.08;
+    
+    const wx=Math.cos(angle)*radius+(Math.random()-0.5)*0.1;
+    const wy=heightPos+(Math.random()-0.5)*0.15;
+    const wz=Math.sin(angle)*radius+(Math.random()-0.5)*0.1;
+    roses.push(new THREE.Vector3(wx,wy,wz));
+  }
+  
+  // === RIBBON BOW (at bottom, pink/gold) ===
+  // Bow loops
+  for(let side=-1;side<=1;side+=2){
+    for(let i=0;i<60;i++){
+      const angle=Math.random()*Math.PI;
+      const r=0.15+Math.random()*0.1;
+      const bowX=side*0.2+Math.cos(angle)*r*0.5;
+      const bowY=-1.15+(Math.random()-0.5)*0.08;
+      const bowZ=Math.sin(angle)*r;
+      roses.push(new THREE.Vector3(bowX,bowY,bowZ));
+    }
+  }
+  
+  // Bow center knot
+  for(let i=0;i<40;i++){
+    const angle=Math.random()*Math.PI*2;
+    const r=Math.random()*0.06;
+    roses.push(new THREE.Vector3(
+      Math.cos(angle)*r,
+      -1.15+(Math.random()-0.5)*0.05,
+      Math.sin(angle)*r
+    ));
+  }
+  
+  // Ribbon tails hanging down
+  for(let side=-1;side<=1;side+=2){
+    for(let i=0;i<30;i++){
+      const t=i/30;
+      const ribbonX=side*0.15*(1+t*0.3);
+      const ribbonY=-1.2-t*0.25;
+      const ribbonZ=(Math.random()-0.5)*0.08;
+      roses.push(new THREE.Vector3(ribbonX,ribbonY,ribbonZ));
+    }
+  }
+  
+  return roses;
+}
+const roseBouquet=createRoseBouquet();
+
+for(let i=0;i<heartCount;i++){
+  const v=new THREE.Vector3().fromBufferAttribute(heartPos,i);
+  v.x+=(Math.random()-0.5)*0.06;
+  v.y+=(Math.random()-0.5)*0.06;
+  v.z+=(Math.random()-0.5)*0.06;
+  verts.push(v.x,v.y,v.z);
+  
+  const c=new THREE.Color();
+  // More pink/red colors for heart
+  const hue=0.92-Math.random()*0.08;
+  c.setHSL(hue,1,0.5+Math.random()*0.3);
+  colors.push(c.r,c.g,c.b);
+  
+  const targetIdx=Math.floor((i/heartCount)*textPositions.length);
+  const target=textPositions[targetIdx]||new THREE.Vector3(0,0,0);
+  targetPos.push(target.x,target.y,target.z);
+  
+  // Map to rose positions
+  const roseIdx=Math.floor((i/heartCount)*roseBouquet.length);
+  const rose=roseBouquet[roseIdx]||new THREE.Vector3(0,0,0);
+  rosePositions.push(rose.x,rose.y,rose.z);
+}
+
+heartPoints.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));
+heartPoints.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
+heartPoints.setAttribute('targetPosition',new THREE.Float32BufferAttribute(targetPos,3));
+heartPoints.setAttribute('rosePosition',new THREE.Float32BufferAttribute(rosePositions,3));
+
+const mat=new THREE.PointsMaterial({
+  size:0.045,
+  vertexColors:true,
+  transparent:true,
+  opacity:1.0,
+  blending:THREE.AdditiveBlending,
+  depthWrite:false,
+  sizeAttenuation:true
+});
+const heart=new THREE.Points(heartPoints,mat);
+scene.add(heart);
+
+// === Animation States ===
+let state='idle';
+let stateTime=0;
+let particles=[];
+let canClick=false;
+
+function initParticles(){
+  const pos=heart.geometry.attributes.position.array;
+  const target=heart.geometry.attributes.targetPosition.array;
+  const rose=heart.geometry.attributes.rosePosition.array;
+  particles=[];
+  for(let i=0;i<pos.length;i+=3){
+    const angle=Math.random()*Math.PI*2;
+    const speed=0.08+Math.random()*0.12;
+    particles.push({
+      pos:new THREE.Vector3(pos[i],pos[i+1],pos[i+2]),
+      vel:new THREE.Vector3(
+        Math.cos(angle)*speed,
+        Math.sin(angle)*speed,
+        (Math.random()-0.5)*speed
+      ),
+      targetPos:new THREE.Vector3(target[i],target[i+1],target[i+2]),
+      rosePos:new THREE.Vector3(rose[i],rose[i+1],rose[i+2]),
+      orbitAngle:Math.random()*Math.PI*2,
+      orbitSpeed:0.8+Math.random()*0.4,
+      orbitRadius:0
+    });
+  }
+}
+
+function startAnimation(){
+  if(state!=='idle'||!canClick)return;
+  state='explode';
+  stateTime=0;
+  initParticles();
+  createFireworks();
+  
+  // Update instruction text
+  const instruction=document.querySelector('.instruction');
+  instruction.textContent='✨ Biến thành bó hoa hồng... ✨';
+}
+
+// === Update Particles ===
+function updateParticles(deltaTime){
+  const arr=heart.geometry.attributes.position.array;
+  const colorArr=heart.geometry.attributes.color.array;
+  
+  if(state==='explode'){
+    for(let i=0;i<particles.length;i++){
+      const p=particles[i];
+      p.vel.multiplyScalar(0.98);
+      p.pos.add(p.vel);
+      arr[i*3]=p.pos.x;
+      arr[i*3+1]=p.pos.y;
+      arr[i*3+2]=p.pos.z;
+    }
+    
+    stateTime+=deltaTime;
+    if(stateTime>2){
+      state='orbit';
+      stateTime=0;
+      particles.forEach(p=>{
+        p.orbitRadius=Math.sqrt(p.pos.x**2+p.pos.y**2+p.pos.z**2);
+      });
+    }
+  }
+  else if(state==='orbit'){
+    for(let i=0;i<particles.length;i++){
+      const p=particles[i];
+      p.orbitAngle+=p.orbitSpeed*deltaTime;
+      const r=p.orbitRadius;
+      p.pos.x=Math.cos(p.orbitAngle)*r;
+      p.pos.z=Math.sin(p.orbitAngle)*r;
+      p.pos.y+=Math.sin(stateTime*2+i*0.01)*0.02;
+      arr[i*3]=p.pos.x;
+      arr[i*3+1]=p.pos.y;
+      arr[i*3+2]=p.pos.z;
+    }
+    
+    stateTime+=deltaTime;
+    if(stateTime>3){
+      state='formRose';
+      stateTime=0;
+      // Update text
+      const instruction=document.querySelector('.instruction');
+      instruction.textContent='🌹 Bó hoa hồng dành tặng em! 🌹';
+    }
+  }
+  else if(state==='formRose'){
+    for(let i=0;i<particles.length;i++){
+      const p=particles[i];
+      p.pos.lerp(p.rosePos,0.04);
+      arr[i*3]=p.pos.x;
+      arr[i*3+1]=p.pos.y;
+      arr[i*3+2]=p.pos.z;
+      
+      // COLOR BY Y POSITION - matching the bouquet image
+      const idx=i*3;
+      const yPos=p.rosePos.y;
+      
+      if(yPos>0.7){ // Top roses - BRIGHT RED
+        colorArr[idx]+=(0.95-colorArr[idx])*0.03;
+        colorArr[idx+1]+=(0.15-colorArr[idx+1])*0.03;
+        colorArr[idx+2]+=(0.2-colorArr[idx+2])*0.03;
+      }
+      else if(yPos>0.5){ // Mid roses - PINK/RED
+        colorArr[idx]+=(1.0-colorArr[idx])*0.03;
+        colorArr[idx+1]+=(0.3-colorArr[idx+1])*0.03;
+        colorArr[idx+2]+=(0.35-colorArr[idx+2])*0.03;
+      }
+      else if(yPos>-0.5){ // Leaves around roses - GREEN
+        colorArr[idx]+=(0.2-colorArr[idx])*0.03;
+        colorArr[idx+1]+=(0.55-colorArr[idx+1])*0.03;
+        colorArr[idx+2]+=(0.15-colorArr[idx+2])*0.03;
+      }
+      else if(yPos>-1.2){ // Wrapping paper - BEIGE/TAN
+        colorArr[idx]+=(0.85-colorArr[idx])*0.03;
+        colorArr[idx+1]+=(0.75-colorArr[idx+1])*0.03;
+        colorArr[idx+2]+=(0.55-colorArr[idx+2])*0.03;
+      }
+      else{ // Ribbon bow - PINK/SALMON
+        colorArr[idx]+=(1.0-colorArr[idx])*0.03;
+        colorArr[idx+1]+=(0.7-colorArr[idx+1])*0.03;
+        colorArr[idx+2]+=(0.6-colorArr[idx+2])*0.03;
+      }
+    }
+    
+    heart.geometry.attributes.color.needsUpdate=true;
+    stateTime+=deltaTime;
+    
+    if(stateTime>8){
+      state='showText';
+      stateTime=0;
+      const instruction=document.querySelector('.instruction');
+      instruction.textContent='💖 Ghép thành tên em... 💖';
+    }
+  }
+  else if(state==='showText'){
+    for(let i=0;i<particles.length;i++){
+      const p=particles[i];
+      p.pos.lerp(p.targetPos,0.08);
+      arr[i*3]=p.pos.x;
+      arr[i*3+1]=p.pos.y;
+      arr[i*3+2]=p.pos.z;
+      
+      // Change to golden/pink colors for text
+      const idx=i*3;
+      colorArr[idx]+=(1-colorArr[idx])*0.03;
+      colorArr[idx+1]+=(0.7-colorArr[idx+1])*0.03;
+      colorArr[idx+2]+=(0.3-colorArr[idx+2])*0.03;
+    }
+    heart.geometry.attributes.color.needsUpdate=true;
+    stateTime+=deltaTime;
+  }
+  
+  heart.geometry.attributes.position.needsUpdate=true;
+}
+
+// === Fireworks ===
+function createFireworks(){
+  for(let i=0;i<50;i++){
+    setTimeout(()=>{
+      const x=Math.random()*window.innerWidth;
+      const y=Math.random()*window.innerHeight*0.7;
+      launchFirework(x,y);
+    },i*100);
+  }
+}
+
+function launchFirework(x,y){
+  const colors=['#ff69b4','#ffd700','#ff1493','#00ffff','#ff6347'];
+  const particles=30;
+  for(let i=0;i<particles;i++){
+    const fw=document.createElement('div');
+    fw.className='firework';
+    fw.style.left=x+'px';
+    fw.style.top=y+'px';
+    fw.style.background=colors[Math.floor(Math.random()*colors.length)];
+    document.body.appendChild(fw);
+    
+    const angle=(i/particles)*Math.PI*2;
+    const speed=2+Math.random()*3;
+    const vx=Math.cos(angle)*speed;
+    const vy=Math.sin(angle)*speed;
+    
+    let px=x,py=y,t=0;
+    const id=setInterval(()=>{
+      t+=0.05;
+      px+=vx;
+      py+=vy+t*50;
+      fw.style.left=px+'px';
+      fw.style.top=py+'px';
+      fw.style.opacity=1-t*2;
+      if(t>0.5){
+        clearInterval(id);
+        fw.remove();
+      }
+    },16);
+  }
+}
+
+// === Animation Loop ===
+let lastTime=performance.now();
+function animate(){
+  requestAnimationFrame(animate);
+  const now=performance.now();
+  const deltaTime=(now-lastTime)/1000;
+  lastTime=now;
+  const t=now*0.0004;
+  
+  if(state==='idle'){
+    heart.rotation.y+=0.01;
+    heart.rotation.x=Math.sin(t)*0.05;
+    heart.rotation.z=0;
+    camera.position.x=Math.sin(t*0.8)*0.2;
+    camera.position.y=Math.cos(t*0.6)*0.1;
+  }else{
+    updateParticles(deltaTime);
+    if(state==='formRose'){
+      // Rotate slowly to showcase the bouquet
+      heart.rotation.y+=0.008;
+      heart.rotation.x=Math.sin(t*0.5)*0.1;
+      heart.rotation.z=0;
+      camera.position.z=2.8; // Zoom in closer
+      camera.position.x=Math.sin(t*0.4)*0.4;
+      camera.position.y=Math.cos(t*0.3)*0.3;
+    }
+    else if(state==='showText'){
+      heart.rotation.y+=0.004;
+      heart.rotation.x=0;
+      heart.rotation.z=0;
+      camera.position.z=3.5+Math.sin(t)*0.2;
+      camera.position.x=Math.sin(t*0.5)*0.2;
+    }
+  }
+  
+  camera.lookAt(0,0,0);
+  
+  // Animate lights
+  point1.position.x=Math.sin(t*2)*1.5;
+  point1.position.y=2+Math.cos(t*3)*0.5;
+  point2.position.x=-2+Math.cos(t*1.5)*0.8;
+  point3.position.z=2+Math.sin(t*2.5)*0.5;
+  
+  renderer.render(scene,camera);
+}
+animate();
+
+// === Envelope Sequence ===
+const envelopeWrapper=document.getElementById('envelopeWrapper');
+const container=document.getElementById('container');
+
+setTimeout(()=>{
+  envelopeWrapper.classList.add('hide');
+  starsBg.classList.add('show');
+  nebula.classList.add('show');
+  
+  setTimeout(()=>{
+    envelopeWrapper.style.display='none';
+    container.classList.add('show');
+    canClick=true;
+    
+    // Add heart stars decoration
+    createHeartStars();
+    
+    // Continuous effects
+    setInterval(createShootingStar,1200);
+    setInterval(createTeddyBear,300);
+    setInterval(()=>{
+      for(let i=0;i<3;i++){
+        setTimeout(createTeddyBear,i*100);
+      }
+    },2000);
+  },1500);
+},config.envelopeDuration);
+
+// === Heart Stars Decoration ===
+function createHeartStars(){
+  const heartStarsCount=150;
+  const sceneRect=document.querySelector('.scene').getBoundingClientRect();
+  const centerX=sceneRect.left+sceneRect.width/2;
+  const centerY=sceneRect.top+sceneRect.height/2;
+  
+  for(let i=0;i<heartStarsCount;i++){
+    const star=document.createElement('div');
+    star.className='heart-star';
+    const angle=Math.random()*Math.PI*2;
+    const radius=250+Math.random()*150;
+    const x=centerX+Math.cos(angle)*radius;
+    const y=centerY+Math.sin(angle)*radius;
+    star.style.left=x+'px';
+    star.style.top=y+'px';
+    star.style.position='fixed';
+    star.style.animationDelay=Math.random()*2+'s';
+    star.style.animationDuration=(Math.random()*2+1.5)+'s';
+    document.body.appendChild(star);
+  }
+}
+
+// === Click Event ===
+canvas.addEventListener('click',startAnimation);
+
+// Auto start after envelope
+setTimeout(()=>{
+  if(canClick)startAnimation();
+},config.envelopeDuration+config.explosionDelay);
+</script>
 </body>
 </html>
