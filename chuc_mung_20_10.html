@@ -386,7 +386,57 @@
             height: 100%;
             transition: transform 0.02s ease-out;
             transform-style: preserve-3d;
-            animation: heartbeat 1.2s ease-in-out infinite, heartFloat 6s ease-in-out infinite, heartRotate 20s linear infinite;
+            animation: heartFloat 6s ease-in-out infinite, heartRotate 20s linear infinite;
+        }
+
+        .heart-beat {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 200px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, 
+                rgba(255, 107, 157, 0.8) 0%, 
+                rgba(255, 20, 147, 0.6) 30%, 
+                rgba(138, 43, 226, 0.4) 60%, 
+                transparent 100%);
+            border-radius: 50%;
+            animation: realHeartbeat 0.8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart-beat::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150px;
+            height: 150px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, 
+                rgba(255, 107, 157, 0.6) 0%, 
+                rgba(255, 20, 147, 0.4) 40%, 
+                transparent 70%);
+            border-radius: 50%;
+            animation: realHeartbeat 0.8s ease-in-out infinite 0.1s;
+        }
+
+        .heart-beat::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, 
+                rgba(255, 107, 157, 0.4) 0%, 
+                rgba(255, 20, 147, 0.2) 50%, 
+                transparent 80%);
+            border-radius: 50%;
+            animation: realHeartbeat 0.8s ease-in-out infinite 0.2s;
         }
 
         .heart-star {
@@ -601,13 +651,58 @@
             }
         }
 
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            8% { transform: scale(1.08); }
-            16% { transform: scale(1); }
-            24% { transform: scale(1.12); }
-            32% { transform: scale(1); }
-            100% { transform: scale(1); }
+        @keyframes realHeartbeat {
+            0% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+            15% { 
+                transform: translate(-50%, -50%) scale(1.15);
+                opacity: 1;
+            }
+            30% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+            45% { 
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            60% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes heartAppear {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0) rotate(0deg);
+            }
+            20% {
+                opacity: 0.3;
+                transform: translate(-50%, -50%) scale(0.3) rotate(72deg);
+            }
+            40% {
+                opacity: 0.6;
+                transform: translate(-50%, -50%) scale(0.6) rotate(144deg);
+            }
+            60% {
+                opacity: 0.8;
+                transform: translate(-50%, -50%) scale(0.8) rotate(216deg);
+            }
+            80% {
+                opacity: 0.9;
+                transform: translate(-50%, -50%) scale(0.9) rotate(288deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1) rotate(360deg);
+            }
         }
 
         @keyframes heartFloat {
@@ -962,6 +1057,7 @@
             <div class="vapor-glow"></div>
             <div class="three-heart-container" id="threeHeartContainer"></div>
             <div class="lens-flare"></div>
+            <div class="heart-beat" id="heartBeat"></div>
             <div class="heart-wrapper" id="heartWrapper"></div>
         </div>
     </div>
@@ -978,7 +1074,8 @@
                     nebulaContainer: document.getElementById('nebula'),
                     heartWrapper: document.getElementById('heartWrapper'),
                     heartStarsContainer: document.getElementById('heartStarsContainer'),
-                    threeHeartContainer: document.getElementById('threeHeartContainer')
+                    threeHeartContainer: document.getElementById('threeHeartContainer'),
+                    heartBeat: document.getElementById('heartBeat')
                 };
                 
                 this.state = {
@@ -1347,6 +1444,19 @@
                 }, 800);
             }
             
+            showHeartDirectly() {
+                // Show heart beat effect immediately
+                this.elements.heartBeat.style.animation = 'heartAppear 2s ease-out forwards, realHeartbeat 0.8s ease-in-out infinite 2s';
+                
+                // Show Three.js heart immediately
+                if (this.state.threeHeart) {
+                    this.state.threeHeart.visible = true;
+                }
+                
+                // Create heart stars without formation animation
+                this.createHeartFromStars();
+            }
+            
             initThreeJS() {
                 if (typeof THREE === 'undefined') {
                     console.warn('Three.js not loaded');
@@ -1441,6 +1551,7 @@
                 
                 // Create heart
                 this.state.threeHeart = new THREE.Points(geometry, material);
+                this.state.threeHeart.visible = false; // Initially hidden
                 this.state.threeScene.add(this.state.threeHeart);
             }
             
@@ -1553,7 +1664,7 @@
                         this.elements.heartContainer.classList.add('show');
                         
                         setTimeout(() => {
-                            this.createHeartFromStars();
+                            this.showHeartDirectly();
                             this.startCinematicEffects();
                         }, 600);
                         
