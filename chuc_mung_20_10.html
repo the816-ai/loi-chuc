@@ -543,9 +543,13 @@
                 transform: translate(var(--startX), var(--startY)) scale(0) rotate(0deg);
                 opacity: 0;
             }
-            50% {
-                transform: translate(calc(var(--startX) * 0.5), calc(var(--startY) * 0.5)) scale(0.5) rotate(360deg);
-                opacity: 0.7;
+            30% {
+                transform: translate(calc(var(--startX) * 0.7), calc(var(--startY) * 0.7)) scale(0.3) rotate(180deg);
+                opacity: 0.5;
+            }
+            60% {
+                transform: translate(calc(var(--startX) * 0.3), calc(var(--startY) * 0.3)) scale(0.7) rotate(450deg);
+                opacity: 0.8;
             }
             to {
                 transform: translate(0, 0) scale(1) rotate(720deg);
@@ -1033,16 +1037,17 @@
             }
 
             createTeddyBear() {
-                const bears = ['🧸', '🐻', '🐻‍❄️', '💝', '🌹', '✨', '💕', '🎀', '🌸', '🦄', '🎁', '💖'];
+                const bears = ['🧸', '🐻', '🐻‍❄️', '💝', '🌹', '✨', '💕', '🎀', '🌸', '🦄', '🎁', '💖', '🐰', '🦋', '🌺', '🍀', '⭐', '🌈', '🎈', '🎊'];
                 const bear = document.createElement('div');
                 bear.className = 'teddy-bear';
                 bear.textContent = bears[Math.floor(Math.random() * bears.length)];
                 bear.style.left = Math.random() * 100 + 'vw';
-                const drift = (Math.random() - 0.5) * 150;
+                const drift = (Math.random() - 0.5) * 200;
                 bear.style.setProperty('--drift', drift + 'px');
-                const duration = Math.random() * 4 + 6;
-                bear.style.animationDuration = duration + 's, 3s';
-                bear.style.animationDelay = Math.random() * 2 + 's';
+                const duration = Math.random() * 3 + 5;
+                bear.style.animationDuration = duration + 's, 2.5s';
+                bear.style.animationDelay = Math.random() * 1 + 's';
+                bear.style.fontSize = (Math.random() * 1 + 2) + 'em';
                 document.body.appendChild(bear);
                 setTimeout(() => bear.remove(), duration * 1000);
             }
@@ -1116,12 +1121,12 @@
                     }
                 }
                 
-                // Animate heart stars with staggered timing
+                // Animate heart stars with staggered timing - faster and smoother
                 this.state.heartStars.forEach((star, index) => {
                     setTimeout(() => {
                         star.classList.add('animate');
-                        star.style.animationDelay = `0s, ${Math.random() * 1.2}s, ${Math.random() * 2}s`;
-                    }, index * 0.06);
+                        star.style.animationDelay = `0s, ${Math.random() * 0.8}s, ${Math.random() * 1.5}s`;
+                    }, index * 0.03);
                 });
                 
                 // Create cosmic particles and galaxy rings
@@ -1198,20 +1203,27 @@
             }
             
             startContinuousAnimations() {
-                // Shooting stars every 1.5 seconds
+                // Shooting stars every 1.2 seconds
                 this.shootingStarInterval = setInterval(() => {
                     this.createShootingStar();
-                }, 1500);
+                }, 1200);
                 
-                // Teddy bears and gifts every 500ms for more frequent appearance
+                // Teddy bears and gifts every 300ms for very frequent appearance
                 this.teddyBearInterval = setInterval(() => {
                     this.createTeddyBear();
-                }, 500);
+                }, 300);
                 
-                // Random heart pulse effect every 2 seconds
+                // Create multiple teddy bears at once
+                this.multipleTeddyInterval = setInterval(() => {
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(() => this.createTeddyBear(), i * 100);
+                    }
+                }, 2000);
+                
+                // Random heart pulse effect every 1.5 seconds
                 this.heartPulseInterval = setInterval(() => {
                     this.createHeartPulse();
-                }, 2000);
+                }, 1500);
             }
             
             createHeartPulse() {
@@ -1239,6 +1251,7 @@
                 // Clear all intervals
                 if (this.shootingStarInterval) clearInterval(this.shootingStarInterval);
                 if (this.teddyBearInterval) clearInterval(this.teddyBearInterval);
+                if (this.multipleTeddyInterval) clearInterval(this.multipleTeddyInterval);
                 if (this.heartPulseInterval) clearInterval(this.heartPulseInterval);
                 if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
                 
