@@ -306,8 +306,8 @@
             height: 500px;
             margin: 0 auto;
             cursor: grab;
-            perspective: 3000px;
-            filter: drop-shadow(0 0 50px rgba(255, 107, 157, 0.6));
+            perspective: 5000px;
+            filter: drop-shadow(0 0 80px rgba(255, 107, 157, 0.8));
         }
 
         .heart-container:active {
@@ -318,24 +318,25 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            transition: transform 0.03s ease-out;
+            transition: transform 0.02s ease-out;
             transform-style: preserve-3d;
-            animation: heartbeat 1.2s ease-in-out infinite, heartFloat 6s ease-in-out infinite;
+            animation: heartbeat 1.2s ease-in-out infinite, heartFloat 6s ease-in-out infinite, heartRotate 20s linear infinite;
         }
 
         .heart-star {
             position: absolute;
-            width: 4px;
-            height: 4px;
-            background: radial-gradient(circle, #ffffff 0%, #ff69b4 20%, #ff1493 40%, #ff6b9d 60%, transparent 80%);
+            width: 3px;
+            height: 3px;
+            background: radial-gradient(circle, #ffffff 0%, #ff69b4 15%, #ff1493 30%, #ff6b9d 50%, transparent 70%);
             border-radius: 50%;
             box-shadow: 
-                0 0 8px #ffffff,
-                0 0 16px #ff69b4,
-                0 0 24px #ff1493,
-                0 0 32px #ff6b9d;
+                0 0 6px #ffffff,
+                0 0 12px #ff69b4,
+                0 0 18px #ff1493,
+                0 0 24px #ff6b9d,
+                0 0 30px #ffc0cb;
             opacity: 0;
-            filter: brightness(1.2);
+            filter: brightness(1.5);
         }
 
         .heart-star.animate {
@@ -354,7 +355,27 @@
             background: #ffffff;
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            box-shadow: 0 0 3px #ffffff;
+            box-shadow: 0 0 4px #ffffff, 0 0 8px #ff69b4;
+        }
+
+        .outer-heart-stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .outer-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: radial-gradient(circle, #ffffff 0%, #ff69b4 40%, transparent 70%);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 4px #ffffff,
+                0 0 8px #ff69b4,
+                0 0 12px #ff1493;
+            animation: outerStarTwinkle 3s ease-in-out infinite, outerStarOrbit 15s linear infinite;
         }
 
         .cosmic-particle {
@@ -535,6 +556,44 @@
             }
             75% {
                 transform: translateY(-15px) rotate(-1deg);
+            }
+        }
+
+        @keyframes heartRotate {
+            0% {
+                transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            }
+            25% {
+                transform: rotateX(15deg) rotateY(90deg) rotateZ(45deg);
+            }
+            50% {
+                transform: rotateX(0deg) rotateY(180deg) rotateZ(90deg);
+            }
+            75% {
+                transform: rotateX(-15deg) rotateY(270deg) rotateZ(135deg);
+            }
+            100% {
+                transform: rotateX(0deg) rotateY(360deg) rotateZ(180deg);
+            }
+        }
+
+        @keyframes outerStarTwinkle {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.5);
+            }
+        }
+
+        @keyframes outerStarOrbit {
+            0% {
+                transform: rotate(0deg) translateX(300px) rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg) translateX(300px) rotate(-360deg);
             }
         }
 
@@ -1089,9 +1148,9 @@
                 const centerY = this.config.centerY;
                 const scale = this.config.heartScale;
                 
-                // Create heart shape with mathematical precision
-                for (let t = 0; t < 2 * Math.PI; t += 0.05) {
-                    for (let r = 0; r <= 1; r += 0.1) {
+                // Create heart shape with mathematical precision - more dense
+                for (let t = 0; t < 2 * Math.PI; t += 0.04) {
+                    for (let r = 0; r <= 1; r += 0.08) {
                         const x = scale * r * 16 * Math.pow(Math.sin(t), 3);
                         const y = -scale * r * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
                         
@@ -1112,7 +1171,7 @@
                         star.style.setProperty('--startY', startY + 'px');
                         
                         // Thêm màu sắc ngẫu nhiên cho ngôi sao
-                        const colors = ['#ff69b4', '#ff1493', '#ff6b9d', '#ffc0cb', '#ffb6c1', '#ffd700', '#ff6347'];
+                        const colors = ['#ff69b4', '#ff1493', '#ff6b9d', '#ffc0cb', '#ffb6c1', '#ffd700', '#ff6347', '#ff1493', '#ff69b4'];
                         const randomColor = colors[Math.floor(Math.random() * colors.length)];
                         star.style.setProperty('--star-color', randomColor);
                         
@@ -1121,19 +1180,51 @@
                     }
                 }
                 
+                // Create outer orbiting stars
+                this.createOuterStars(centerX, centerY);
+                
                 // Animate heart stars with staggered timing - faster and smoother
                 this.state.heartStars.forEach((star, index) => {
                     setTimeout(() => {
                         star.classList.add('animate');
                         star.style.animationDelay = `0s, ${Math.random() * 0.8}s, ${Math.random() * 1.5}s`;
-                    }, index * 0.03);
+                    }, index * 0.025);
                 });
                 
                 // Create cosmic particles and galaxy rings
                 setTimeout(() => {
                     this.createCosmicParticles(centerX, centerY);
                     this.createGalaxyRings();
-                }, 1000);
+                }, 800);
+            }
+            
+            createOuterStars(centerX, centerY) {
+                const outerStarsContainer = document.createElement('div');
+                outerStarsContainer.className = 'outer-heart-stars';
+                
+                // Create multiple rings of orbiting stars
+                for (let ring = 0; ring < 3; ring++) {
+                    const ringRadius = 350 + (ring * 100);
+                    const starCount = 20 + (ring * 10);
+                    
+                    for (let i = 0; i < starCount; i++) {
+                        const star = document.createElement('div');
+                        star.className = 'outer-star';
+                        
+                        const angle = (i / starCount) * Math.PI * 2;
+                        const x = centerX + Math.cos(angle) * ringRadius;
+                        const y = centerY + Math.sin(angle) * ringRadius;
+                        
+                        star.style.left = x + 'px';
+                        star.style.top = y + 'px';
+                        star.style.animationDelay = (Math.random() * 3) + 's';
+                        star.style.animationDuration = `${3 + Math.random() * 2}s, ${15 + ring * 5}s`;
+                        
+                        outerStarsContainer.appendChild(star);
+                    }
+                }
+                
+                this.elements.heartWrapper.appendChild(outerStarsContainer);
             }
             
             createCosmicParticles(centerX, centerY) {
