@@ -326,6 +326,56 @@
             filter: drop-shadow(0 0 50px rgba(255, 107, 157, 0.6));
         }
 
+        .vapor-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 600px;
+            height: 600px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, 
+                rgba(255, 107, 157, 0.1) 0%, 
+                rgba(255, 20, 147, 0.05) 30%, 
+                rgba(138, 43, 226, 0.03) 60%, 
+                transparent 100%);
+            border-radius: 50%;
+            animation: vaporPulse 4s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .lens-flare {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 200px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, 
+                rgba(255, 255, 255, 0.3) 0%, 
+                rgba(255, 215, 0, 0.2) 20%, 
+                rgba(255, 107, 157, 0.1) 40%, 
+                transparent 70%);
+            border-radius: 50%;
+            animation: lensFlare 6s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .title {
+            font-size: 5em;
+            background: linear-gradient(45deg, #fff, #ff6b9d, #ffd700, #fff);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 60px;
+            animation: fadeInDown 1s ease-out, textShimmer 3s ease-in-out infinite, titleGlow 2s ease-in-out infinite;
+            font-weight: bold;
+            filter: drop-shadow(0 0 20px rgba(255, 107, 157, 0.8));
+            font-family: 'Pacifico', cursive;
+        }
+
         .heart-container:active {
             cursor: grabbing;
         }
@@ -613,6 +663,74 @@
             }
         }
 
+        @keyframes vaporPulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes lensFlare {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(0.8) rotate(0deg);
+                opacity: 0.4;
+            }
+            25% {
+                transform: translate(-50%, -50%) scale(1.1) rotate(90deg);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.3) rotate(180deg);
+                opacity: 0.5;
+            }
+            75% {
+                transform: translate(-50%, -50%) scale(1.0) rotate(270deg);
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes titleGlow {
+            0%, 100% {
+                filter: drop-shadow(0 0 20px rgba(255, 107, 157, 0.8));
+                transform: scale(1);
+            }
+            50% {
+                filter: drop-shadow(0 0 40px rgba(255, 107, 157, 1)) drop-shadow(0 0 60px rgba(255, 20, 147, 0.6));
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes cameraTiltUp {
+            0% {
+                transform: perspective(1000px) rotateX(0deg) translateY(0px);
+            }
+            100% {
+                transform: perspective(1000px) rotateX(-5deg) translateY(-20px);
+            }
+        }
+
+        @keyframes subtleOrbit {
+            0% {
+                transform: perspective(1000px) rotateY(0deg);
+            }
+            25% {
+                transform: perspective(1000px) rotateY(2deg);
+            }
+            50% {
+                transform: perspective(1000px) rotateY(0deg);
+            }
+            75% {
+                transform: perspective(1000px) rotateY(-2deg);
+            }
+            100% {
+                transform: perspective(1000px) rotateY(0deg);
+            }
+        }
+
         @keyframes formHeart {
             from {
                 transform: translate(var(--startX), var(--startY)) scale(0) rotate(0deg);
@@ -841,7 +959,9 @@
     <div class="container" id="heartContainer">
         <h1 class="title">💖 Hương Lan Dễ Thương 💖</h1>
         <div class="heart-container" id="heartStarsContainer">
+            <div class="vapor-glow"></div>
             <div class="three-heart-container" id="threeHeartContainer"></div>
+            <div class="lens-flare"></div>
             <div class="heart-wrapper" id="heartWrapper"></div>
         </div>
     </div>
@@ -1267,45 +1387,56 @@
                 const positions = [];
                 const colors = [];
                 const sizes = [];
+                const opacities = [];
                 
                 for (let i = 0; i < particles; i++) {
                     const t = Math.random() * Math.PI * 2;
                     const r = Math.random();
                     
-                    // Heart equation
+                    // Heart equation with depth variation
                     const x = 16 * Math.pow(Math.sin(t), 3) * r;
                     const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)) * r;
-                    const z = (Math.random() - 0.5) * 0.5;
+                    const z = (Math.random() - 0.5) * 1.0; // Increased depth range
                     
                     positions.push(x * 0.08, y * 0.08, z);
                     
-                    // Color variation
+                    // Enhanced color variation with purple tones
                     const colorVariation = Math.random();
-                    if (colorVariation < 0.3) {
+                    if (colorVariation < 0.25) {
                         colors.push(1, 0.4, 0.7); // Pink
-                    } else if (colorVariation < 0.6) {
+                    } else if (colorVariation < 0.5) {
                         colors.push(1, 0.08, 0.58); // Deep pink
-                    } else if (colorVariation < 0.8) {
+                    } else if (colorVariation < 0.7) {
                         colors.push(1, 0.75, 0.8); // Light pink
+                    } else if (colorVariation < 0.85) {
+                        colors.push(0.8, 0.2, 1); // Purple
                     } else {
                         colors.push(1, 1, 0); // Yellow
                     }
                     
-                    // Size variation
-                    sizes.push(Math.random() * 0.03 + 0.01);
+                    // Size variation with depth-based scaling
+                    const depthScale = 1 + Math.abs(z) * 0.5;
+                    sizes.push((Math.random() * 0.03 + 0.01) * depthScale);
+                    
+                    // Opacity based on depth (depth of field effect)
+                    const depthOpacity = 1 - Math.abs(z) * 0.3;
+                    opacities.push(Math.max(0.3, depthOpacity));
                 }
                 
                 geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
                 geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
                 geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+                geometry.setAttribute('opacity', new THREE.Float32BufferAttribute(opacities, 1));
                 
-                // Material
+                // Enhanced material with depth of field
                 const material = new THREE.PointsMaterial({
                     size: 0.02,
                     vertexColors: true,
                     transparent: true,
-                    opacity: 0.8,
-                    blending: THREE.AdditiveBlending
+                    opacity: 0.9,
+                    blending: THREE.AdditiveBlending,
+                    sizeAttenuation: true,
+                    alphaTest: 0.1
                 });
                 
                 // Create heart
@@ -1321,9 +1452,16 @@
                 requestAnimationFrame(() => this.animateThreeJS());
                 
                 if (this.state.threeHeart) {
-                    this.state.threeHeart.rotation.y += 0.005;
-                    this.state.threeHeart.rotation.x += 0.002;
-                    this.state.threeHeart.rotation.z += 0.001;
+                    // Enhanced rotation with cinematic feel
+                    this.state.threeHeart.rotation.y += 0.003;
+                    this.state.threeHeart.rotation.x += 0.001;
+                    this.state.threeHeart.rotation.z += 0.0005;
+                    
+                    // Subtle camera orbit
+                    const time = Date.now() * 0.0005;
+                    this.state.threeCamera.position.x = Math.sin(time) * 0.1;
+                    this.state.threeCamera.position.y = Math.cos(time * 0.7) * 0.05;
+                    this.state.threeCamera.lookAt(0, 0, 0);
                 }
                 
                 this.state.threeRenderer.render(this.state.threeScene, this.state.threeCamera);
@@ -1416,6 +1554,7 @@
                         
                         setTimeout(() => {
                             this.createHeartFromStars();
+                            this.startCinematicEffects();
                         }, 600);
                         
                         // Start continuous animations
@@ -1512,6 +1651,16 @@
                     x: Math.random() * window.innerWidth,
                     y: Math.random() * window.innerHeight
                 };
+            }
+            
+            startCinematicEffects() {
+                // Add camera tilt-up effect to heart container
+                this.elements.heartContainer.style.animation = 'cameraTiltUp 8s ease-out forwards';
+                
+                // Add subtle orbit to the entire container
+                setTimeout(() => {
+                    this.elements.heartContainer.style.animation += ', subtleOrbit 20s ease-in-out infinite';
+                }, 2000);
             }
             
             // Performance monitoring
